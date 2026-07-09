@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DayPicker } from "react-day-picker";
 import { format, addDays, differenceInDays } from "date-fns";
 import "react-day-picker/dist/style.css";
-import { destinations } from "@/data/destinations";
+import { destinations as fallbackDestinations, Destination } from "@/data/destinations";
 import { useAuth } from "@/lib/AuthContext";
 import { useLanguage } from "@/lib/LanguageContext";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 
 const css = `
   .rdp { --rdp-color-accent: #2563eb; }
@@ -23,6 +23,23 @@ function BuilderContent() {
   const [step, setStep] = useState(1);
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  const [destinations, setDestinations] = useState<Destination[]>(fallbackDestinations);
+
+  useEffect(() => {
+    const fetchDests = async () => {
+      try {
+        const snap = await getDocs(collection(db, "journeymate_destinations"));
+        if (!snap.empty) {
+          const dests = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Destination));
+          setDestinations(dests);
+        }
+      } catch (e) {
+        console.error("Failed to fetch destinations from DB", e);
+      }
+    };
+    fetchDests();
+  }, []);
   
   const { user } = useAuth();
   const [isSavingTrip, setIsSavingTrip] = useState(false);

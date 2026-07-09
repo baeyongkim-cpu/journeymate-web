@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, ChevronDown, ChevronUp } from "lucide-react";
@@ -8,11 +8,29 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useLanguage } from "@/lib/LanguageContext";
 
-import { destinations } from "@/data/destinations";
+import { destinations as fallbackDestinations, Destination } from "@/data/destinations";
+import { db } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 export default function DestinationsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [destinations, setDestinations] = useState<Destination[]>(fallbackDestinations);
   const { t, lang } = useLanguage();
+
+  useEffect(() => {
+    const fetchDests = async () => {
+      try {
+        const snap = await getDocs(collection(db, "journeymate_destinations"));
+        if (!snap.empty) {
+          const dests = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Destination));
+          setDestinations(dests);
+        }
+      } catch (e) {
+        console.error("Failed to fetch destinations from DB, using fallback", e);
+      }
+    };
+    fetchDests();
+  }, []);
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
