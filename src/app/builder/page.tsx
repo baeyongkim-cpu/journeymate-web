@@ -213,7 +213,10 @@ function BuilderContent() {
     <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold tracking-tight mb-3">{t("스마트 여행 빌더", "Smart Trip Builder")}</h1>
-        <p className="text-gray-500">{t("원하는 여행 스타일을 입력하거나 여러 장소를 직접 담아보세요.", "Enter your desired travel style or add multiple places yourself.")}</p>
+        <p className="text-gray-500 mb-2">{t("원하는 여행 스타일을 입력하거나 여러 장소를 직접 담아보세요.", "Enter your desired travel style or add multiple places yourself.")}</p>
+        <p className="text-sm font-medium text-blue-600 bg-blue-50 py-2 px-4 rounded-full inline-block">
+          {t("안내: 모든 상품은 '사진 스냅 촬영'이 포함된 가격이며, 동반자로서 동행할 뿐 전문 가이드 역할을 제공하지 않습니다.", "Notice: All products include the 'photo snap' price, and we accompany you as a companion, not a professional guide.")}
+        </p>
       </div>
 
       {/* AI Prompt */}

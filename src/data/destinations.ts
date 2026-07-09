@@ -32,7 +32,7 @@ export const destinations: Destination[] = [
       { name: "개항로 (Gaehangro)", nameEn: "Gaehangro", desc: "100년 전 과거로 돌아간 듯한 레트로 감성 스냅", descEn: "Retro-style snapshot feeling like a trip back 100 years", priceValue: 200 },
       { name: "차이나타운 (Chinatown)", nameEn: "Chinatown", desc: "이국적인 붉은 물결 속 식도락 브이로그", descEn: "Food vlog amidst exotic red waves", priceValue: 250 },
       { name: "신포시장 (Sinpo Market)", nameEn: "Sinpo Market", desc: "로컬 시장의 활기와 먹방 촬영", descEn: "Mukbang filming with local market energy", priceValue: 150 },
-      { name: "프라이빗 섬 투어", nameEn: "Private Island Tour", desc: "무의도/영흥도 바다 배경 1박 2일 스냅 (숙박 포함)", descEn: "1 Night 2 Days snapshot at Muuido/Yeongheungdo beach (Stay included)", priceValue: 450 },
+      { name: "인천 근교 섬 투어", nameEn: "Island Tour near Incheon", desc: "인천에서 쉽게 갈 수 있는 고즈넉한 섬 배경 1박 2일 스냅 (숙박 포함)", descEn: "1 Night 2 Days snapshot at a quiet island near Incheon (Stay included)", priceValue: 450 },
       { name: "예술회관 & 구월동", nameEn: "Arts Center & Guwol-dong", desc: "도심 속 트렌디한 시티팝 감성 촬영", descEn: "Trendy city-pop vibe shooting in downtown", priceValue: 200 }
     ]
   },
@@ -47,9 +47,9 @@ export const destinations: Destination[] = [
     tagsEn: ["City Tour", "Palaces", "Trend"],
     subDestinations: [
       { name: "경복궁 & 북촌", nameEn: "Gyeongbokgung & Bukchon", desc: "프리미엄 한복 스냅 (한복 대여 포함)", descEn: "Premium Hanbok snapshot (rental included)", priceValue: 250 },
-      { name: "강남 & 청담", nameEn: "Gangnam & Cheongdam", desc: "K-Pop 아이돌 스타일 뷰티 & 럭셔리 브이로그", descEn: "K-Pop idol style beauty & luxury vlog", priceValue: 500 },
+      { name: "강남 & 청담", nameEn: "Gangnam & Cheongdam", desc: "K-Pop 아이돌 스타일 뷰티 & 럭셔리 브이로그", descEn: "K-Pop idol style beauty & luxury vlog", priceValue: 250 },
       { name: "성수동 (Seongsu)", nameEn: "Seongsu", desc: "인더스트리얼 카페 거리 스트릿 스냅", descEn: "Street snap in industrial cafe alleys", priceValue: 200 },
-      { name: "한강 공원", nameEn: "Hangang Park", desc: "피크닉 세트와 함께하는 힐링 스냅", descEn: "Healing snapshot with picnic set", priceValue: 180 }
+      { name: "한강 공원", nameEn: "Hangang Park", desc: "피크닉 세트와 함께하는 힐링 스냅 (대여 별도)", descEn: "Healing snapshot with picnic set (Rental separate)", priceValue: 180 }
     ]
   },
   {
