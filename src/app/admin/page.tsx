@@ -26,7 +26,14 @@ export default function AdminDashboardPage() {
       const fetchDestinations = async () => {
         try {
           const snapshot = await getDocs(collection(db, "journeymate_destinations"));
-          const destData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Destination));
+          const destData = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return { 
+              id: doc.id, 
+              ...data,
+              subDestinations: data.subDestinations || []
+            } as Destination;
+          });
           setDestinations(destData);
         } catch (e) {
           console.error("Error fetching destinations", e);

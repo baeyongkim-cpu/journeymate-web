@@ -28,7 +28,14 @@ export default function AdminEditPage({ params }: { params: Promise<{ id: string
         const docRef = doc(db, "journeymate_destinations", resolvedParams.id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setDest({ id: docSnap.id, ...docSnap.data() } as Destination);
+          const data = docSnap.data();
+          setDest({ 
+            id: docSnap.id, 
+            ...data,
+            tags: data.tags || [],
+            tagsEn: data.tagsEn || [],
+            subDestinations: data.subDestinations || []
+          } as Destination);
         } else {
           // If not found, create an empty shell
           setDest({

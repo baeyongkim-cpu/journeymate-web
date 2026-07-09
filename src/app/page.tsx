@@ -18,6 +18,7 @@ export default function Home() {
             src="https://www.youtube.com/embed/2bOVs2HyTwQ?autoplay=1&mute=1&controls=0&loop=1&playlist=2bOVs2HyTwQ&showinfo=0&rel=0&modestbranding=1&playsinline=1"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            loading="lazy"
           ></iframe>
         </div>
         {/* Gradient overlay for better text readability */}

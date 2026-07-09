@@ -22,7 +22,16 @@ export default function DestinationsPage() {
       try {
         const snap = await getDocs(collection(db, "journeymate_destinations"));
         if (!snap.empty) {
-          const dests = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Destination));
+          const dests = snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              tags: data.tags || [],
+              tagsEn: data.tagsEn || [],
+              subDestinations: data.subDestinations || []
+            } as Destination;
+          });
           setDestinations(dests);
         }
       } catch (e) {
