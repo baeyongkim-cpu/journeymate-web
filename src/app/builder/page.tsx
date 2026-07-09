@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Sparkles, CheckCircle2, ChevronRight, Plane, Building, Stethoscope, Camera, Video, MapPin, ChevronDown, ChevronUp, Plus, X, Car, Save } from "lucide-react";
+import { Sparkles, CheckCircle2, ChevronRight, Plane, Building, Stethoscope, Camera, Video, MapPin, ChevronDown, ChevronUp, Plus, X, Car, Save, Train } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DayPicker } from "react-day-picker";
 import { format, addDays, differenceInDays } from "date-fns";
@@ -59,6 +59,7 @@ function BuilderContent() {
   const [rental, setRental] = useState({ selected: false, type: 'car_only', days: 1, distanceUnits: 1 });
   const [stay, setStay] = useState({ selected: false, type: 'airbnb', useTotalTripDates: true, customDays: 1 });
   const [medical, setMedical] = useState({ selected: false, field: "" });
+  const [transit, setTransit] = useState({ selected: false, departure: "", destination: "", accompany: false });
   
   const [dateRange, setDateRange] = useState<{from: Date | undefined, to: Date | undefined}>({ from: undefined, to: undefined });
   
@@ -110,6 +111,7 @@ function BuilderContent() {
               if (data.addons.rental) setRental(data.addons.rental);
               if (data.addons.stay) setStay(data.addons.stay);
               if (data.addons.medical) setMedical(data.addons.medical);
+              if (data.addons.transit) setTransit(data.addons.transit);
             }
             if (data.dateRange) {
               setDateRange({
@@ -198,7 +200,7 @@ function BuilderContent() {
         selectedCourses: selectedCourses.map(c => destinations.find(d => d.id === c.destId)?.subDestinations[c.subIndex]?.name || ""),
         rawCourses: selectedCourses,
         customCourses,
-        addons: { pickup, rental, stay, medical },
+        addons: { pickup, rental, stay, medical, transit },
         totalPrice,
         dateRange: {
           from: dateRange.from ? dateRange.from.toISOString() : null,
@@ -232,7 +234,7 @@ function BuilderContent() {
         <h1 className="text-3xl font-bold tracking-tight mb-3">{t("스마트 여행 빌더", "Smart Trip Builder")}</h1>
         <p className="text-gray-500 mb-2">{t("원하는 여행 스타일을 입력하거나 여러 장소를 직접 담아보세요.", "Enter your desired travel style or add multiple places yourself.")}</p>
         <p className="text-sm font-medium text-blue-600 bg-blue-50 py-2 px-4 rounded-full inline-block">
-          {t("안내: 명시된 금액은 촬영에 대한 비용입니다. 촬영 중 일부 안내를 도와드릴 수 있으며, 현지 동반자로서 안전하고 즐거운 여행이 되도록 최선을 다하겠습니다.", "Notice: The stated price is for the shoot. We can provide some guidance during the shoot and, as your local companion, will do our best to ensure a safe and enjoyable trip.")}
+          {t("안내: 명시된 금액은 촬영에 대한 비용입니다. 현지 동반자로서 안전하고 즐거운 여행이 되도록 최선을 다하겠습니다.", "Notice: The stated price is for the shoot. As your local companion, we will do our best to ensure a safe and enjoyable trip.")}
         </p>
       </div>
 
@@ -407,7 +409,7 @@ function BuilderContent() {
                                     />
                                   </div>
                                   <div className="mb-3">
-                                    <label className="block text-xs font-bold text-gray-500 mb-1">{t("어떤 촬영을 원하시나요? (선택)", "What kind of shoot do you want? (Optional)")}</label>
+                                    <label className="block text-xs font-bold text-gray-500 mb-1">{t("어떤 여행과 촬영을 원하시나요? (선택)", "What kind of trip and shoot do you want? (Optional)")}</label>
                                     <input 
                                       type="text" 
                                       placeholder={t("예: 아이돌 커버 댄스 촬영하고 싶어요", "ex: I want to shoot an idol cover dance")} 
@@ -481,7 +483,7 @@ function BuilderContent() {
                   
                   <div className="w-full">
                     <div className="mb-4 text-sm text-blue-600 font-bold bg-blue-50 p-3 rounded-lg inline-block">
-                      💡 {t("여행이 진행될 전체 기간을 선택해주세요. 하루라면 같은 날짜를 두 번 클릭하세요.", "Please select the entire trip period. If it's one day, click the same date twice.")}
+                      💡 {t("여행이 진행될 전체 기간을 선택해주세요.", "Please select the entire trip period.")}
                     </div>
                     <DayPicker 
                       mode="range"
@@ -712,6 +714,71 @@ function BuilderContent() {
                     </AnimatePresence>
                   </div>
 
+                  {/* Public Transit */}
+                  <div className={`rounded-2xl border-2 transition-all overflow-hidden ${transit.selected ? 'border-blue-600' : 'border-gray-100'}`}>
+                    <label className={`flex items-center justify-between p-5 cursor-pointer ${transit.selected ? 'bg-blue-50/20' : 'hover:bg-gray-50'}`}>
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${transit.selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                          <Train className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-lg">{t("대중교통 안내 및 동행", "Public Transit Guide & Companion")}</div>
+                          <div className="text-sm text-gray-500">{t("목적지까지 최적의 저렴한 이동 방법 안내", "Optimal, cheap public transit routes to destinations")}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="font-bold text-blue-600">{t("별도 결제", "Paid Separately")}</div>
+                        <input type="checkbox" checked={transit.selected} onChange={() => setTransit(t => ({ ...t, selected: !t.selected }))} className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-600" />
+                      </div>
+                    </label>
+                    <AnimatePresence>
+                      {transit.selected && (
+                        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
+                          <div className="p-5 bg-white border-t border-blue-100">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("출발지", "Departure")}</label>
+                                <input 
+                                  type="text" 
+                                  placeholder={t("예: 서울역", "ex: Seoul Station")}
+                                  value={transit.departure}
+                                  onChange={e => setTransit(t => ({ ...t, departure: e.target.value }))}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("목적지", "Destination")}</label>
+                                <input 
+                                  type="text" 
+                                  placeholder={t("예: 속초 고속터미널", "ex: Sokcho Express Bus Terminal")}
+                                  value={transit.destination}
+                                  onChange={e => setTransit(t => ({ ...t, destination: e.target.value }))}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="mb-2">
+                              <label className="block text-sm font-bold text-gray-700 mb-2">{t("동행 여부", "Accompanied")}</label>
+                              <div className="flex gap-4">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input type="radio" checked={transit.accompany === true} onChange={() => setTransit(t => ({ ...t, accompany: true }))} className="text-blue-600 focus:ring-blue-600" />
+                                  <span className="text-sm">{t("동행 필요", "Need Companion")}</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input type="radio" checked={transit.accompany === false} onChange={() => setTransit(t => ({ ...t, accompany: false }))} className="text-blue-600 focus:ring-blue-600" />
+                                  <span className="text-sm">{t("비동행 (안내만)", "Guide Only")}</span>
+                                </label>
+                              </div>
+                            </div>
+                            <div className="text-xs text-blue-800 bg-blue-50/50 p-4 rounded-lg mt-3">
+                              💡 {t("안내: 요청하신 일정을 확인 후 대중교통 이용 방법을 상세히 안내해 드리며, 필요시 동행해 드립니다. 비용은 별도 안내됩니다.", "Notice: We will check your requested schedule and guide you in detail on how to use public transit, and accompany you if needed. Costs will be notified separately.")}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                 </motion.div>
               )}
             </AnimatePresence>
@@ -794,6 +861,12 @@ function BuilderContent() {
                     {medical.selected && (
                       <div className="flex justify-between items-center text-sm text-indigo-300">
                         <span>{t("의료/뷰티 연계", "Medical/Beauty")} ({medical.field || t('미입력', 'Not entered')})</span>
+                        <span>{t("별도 결제", "Paid Separately")}</span>
+                      </div>
+                    )}
+                    {transit.selected && (
+                      <div className="flex justify-between items-center text-sm text-indigo-300">
+                        <span>{t("대중교통 안내", "Public Transit")} ({transit.departure || '-'} → {transit.destination || '-'}, {transit.accompany ? t('동행', 'Accompanied') : t('비동행', 'Unaccompanied')})</span>
                         <span>{t("별도 결제", "Paid Separately")}</span>
                       </div>
                     )}
