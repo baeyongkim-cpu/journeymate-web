@@ -215,7 +215,7 @@ function BuilderContent() {
         <h1 className="text-3xl font-bold tracking-tight mb-3">{t("스마트 여행 빌더", "Smart Trip Builder")}</h1>
         <p className="text-gray-500 mb-2">{t("원하는 여행 스타일을 입력하거나 여러 장소를 직접 담아보세요.", "Enter your desired travel style or add multiple places yourself.")}</p>
         <p className="text-sm font-medium text-blue-600 bg-blue-50 py-2 px-4 rounded-full inline-block">
-          {t("안내: 명시된 금액은 스냅 촬영에 대한 비용입니다. 촬영 중 일부 안내를 도와드릴 수 있으며, 현지 동반자로서 안전하고 즐거운 여행이 되도록 최선을 다하겠습니다.", "Notice: The stated price is for the photo shoot. We can provide some guidance during the shoot and, as your local companion, will do our best to ensure a safe and enjoyable trip.")}
+          {t("안내: 명시된 금액은 촬영에 대한 비용입니다. 촬영 중 일부 안내를 도와드릴 수 있으며, 현지 동반자로서 안전하고 즐거운 여행이 되도록 최선을 다하겠습니다.", "Notice: The stated price is for the shoot. We can provide some guidance during the shoot and, as your local companion, will do our best to ensure a safe and enjoyable trip.")}
         </p>
       </div>
 
