@@ -61,7 +61,7 @@ export const courses: Course[] = [
       duration: { ko: "당일 (5~7시간)", en: "Day Trip (5–7 hours)" },
       accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
       timing: { ko: "연중 가능 · 봄/가을 추천", en: "Year-round · Spring/Fall recommended" },
-      price: { ko: "1인 약 200,000원~", en: "From KRW 200,000 per person" },
+      price: { ko: "1인 110,000원", en: "KRW 110,000 per person (approx. $85)" },
     },
     schedule: [
       {
@@ -101,7 +101,7 @@ export const courses: Course[] = [
       duration: { ko: "당일 (5~8시간)", en: "Day Trip (5–8 hours)" },
       accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
       timing: { ko: "연중 가능 · 야경 포함 시 일몰 후 권장", en: "Year-round · Arrive before sunset for night view" },
-      price: { ko: "1인 약 180,000원~", en: "From KRW 180,000 per person" },
+      price: { ko: "1인 150,000원", en: "KRW 150,000 per person (approx. $115)" },
     },
     schedule: [
       {
@@ -141,7 +141,7 @@ export const courses: Course[] = [
       duration: { ko: "당일 (7~9시간)", en: "Day Trip (7–9 hours)" },
       accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
       timing: { ko: "연중 가능 · 여름 해수욕·일몰 감상 최적", en: "Year-round · Summer swimming & sunset viewing are highlights" },
-      price: { ko: "1인 약 220,000원~", en: "From KRW 220,000 per person" },
+      price: { ko: "1인 180,000원", en: "KRW 180,000 per person (approx. $135)" },
     },
     schedule: [
       {
@@ -182,7 +182,7 @@ export const courses: Course[] = [
       duration: { ko: "1박 2일", en: "1 Night / 2 Days" },
       accommodation: { ko: "강화 한옥 게스트하우스 또는 프리미엄 펜션", en: "Ganghwa Hanok guesthouse or premium pension" },
       timing: { ko: "연중 가능 · 봄(벚꽃)·가을(단풍) 특히 추천", en: "Year-round · Spring (cherry blossom) & Fall (foliage) highly recommended" },
-      price: { ko: "1인 약 500,000원~", en: "From KRW 500,000 per person" },
+      price: { ko: "1인 460,000원", en: "KRW 460,000 per person (approx. $350)" },
     },
     schedule: [
       {
@@ -234,7 +234,7 @@ export const courses: Course[] = [
       duration: { ko: "1박 2일", en: "1 Night / 2 Days" },
       accommodation: { ko: "파라다이스시티 호텔 (공항 5분, 5성급 복합리조트)", en: "Paradise City Hotel (5 min from airport, 5-star resort complex)" },
       timing: { ko: "연중 가능 · 겨울 스파 힐링 특히 추천", en: "Year-round · Winter spa retreat especially recommended" },
-      price: { ko: "1인 약 800,000원~", en: "From KRW 800,000 per person" },
+      price: { ko: "1인 700,000원", en: "KRW 700,000 per person (approx. $520)" },
     },
     schedule: [
       {
@@ -284,7 +284,7 @@ export const courses: Course[] = [
       duration: { ko: "1박 2일", en: "1 Night / 2 Days" },
       accommodation: { ko: "무의도 풀빌라 또는 글램핑 펜션", en: "Muuido pool villa or glamping pension" },
       timing: { ko: "연중 가능 · 여름 갯벌·해수욕 최적", en: "Year-round · Summer for tidal flat & swimming" },
-      price: { ko: "1인 약 600,000원~", en: "From KRW 600,000 per person" },
+      price: { ko: "1인 440,000원", en: "KRW 440,000 per person (approx. $330)" },
     },
     schedule: [
       {
