@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { courses, CourseType } from "@/data/courses";
-import { Clock, Moon, MapPin, DollarSign, Calendar, MessageCircle, Star, X, Sun, Sunset } from "lucide-react";
+import { Clock, Moon, MapPin, DollarSign, Calendar, MessageCircle, Star, X, Sun, Sunset, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CoursesPage() {
   const { t, lang } = useLanguage();
@@ -12,6 +12,19 @@ export default function CoursesPage() {
   
   const [selectedCourse, setSelectedCourse] = useState(courses[0]);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
   const [activeFilter, setActiveFilter] = useState<'all' | CourseType>('all');
 
   const filters: { key: 'all' | CourseType; labelKo: string; labelEn: string }[] = [
@@ -84,8 +97,28 @@ export default function CoursesPage() {
         </div>
         
         {/* Horizontal Scroll Container */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 px-4 max-w-5xl mx-auto justify-start md:justify-center">
-          {filteredCourses.map((course, index) => {
+        <div className="relative max-w-7xl mx-auto px-0 md:px-12 group">
+          <button 
+            onClick={scrollLeft}
+            className="absolute left-2 md:left-4 top-[40%] -translate-y-1/2 z-20 bg-white/90 hover:bg-white shadow-md rounded-full p-2 text-[var(--color-jm-navy)] hidden md:block opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <button 
+            onClick={scrollRight}
+            className="absolute right-2 md:right-4 top-[40%] -translate-y-1/2 z-20 bg-white/90 hover:bg-white shadow-md rounded-full p-2 text-[var(--color-jm-navy)] hidden md:block opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+
+          <div 
+            ref={sliderRef}
+            className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 px-4 max-w-5xl mx-auto justify-start"
+          >
+            {filteredCourses.map((course, index) => {
             const isSelected = selectedCourse.id === course.id;
             
             return (
@@ -123,6 +156,7 @@ export default function CoursesPage() {
               </div>
             );
           })}
+          </div>
         </div>
       </section>
 
