@@ -34,6 +34,7 @@ export default function CoursesPage() {
     { key: '1-night',   labelKo: '1박 2일', labelEn: '1 Night' },
     { key: '2-night',   labelKo: '2박 3일', labelEn: '2 Nights' },
     { key: '3-night',   labelKo: '3박 4일', labelEn: '3 Nights' },
+    { key: '14-night',  labelKo: '일주',   labelEn: 'Grand Tour' },
   ];
 
   const filteredCourses = activeFilter === 'all' ? courses : courses.filter(c => c.type === activeFilter);
@@ -42,7 +43,9 @@ export default function CoursesPage() {
     if (type === 'day-trip') return isEn ? 'Day Trip' : '당일';
     if (type === '1-night')  return isEn ? '1 Night / 2 Days' : '1박 2일';
     if (type === '2-night')  return isEn ? '2 Nights / 3 Days' : '2박 3일';
-    return isEn ? '3 Nights / 4 Days' : '3박 4일';
+    if (type === '3-night')  return isEn ? '3 Nights / 4 Days' : '3박 4일';
+    if (type === '14-night') return isEn ? '14 Nights / 15 Days' : '14박 15일';
+    return '';
   };
 
   return (
