@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { courses } from "@/data/courses";
-import { Clock, Moon, MapPin, DollarSign, Calendar, MessageCircle, Star, X } from "lucide-react";
+import { courses, CourseType } from "@/data/courses";
+import { Clock, Moon, MapPin, DollarSign, Calendar, MessageCircle, Star, X, Sun, Sunset } from "lucide-react";
 
 export default function CoursesPage() {
   const { t, lang } = useLanguage();
@@ -12,6 +12,24 @@ export default function CoursesPage() {
   
   const [selectedCourse, setSelectedCourse] = useState(courses[0]);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<'all' | CourseType>('all');
+
+  const filters: { key: 'all' | CourseType; labelKo: string; labelEn: string }[] = [
+    { key: 'all',       labelKo: '전체',   labelEn: 'All' },
+    { key: 'day-trip',  labelKo: '당일',   labelEn: 'Day Trip' },
+    { key: '1-night',   labelKo: '1박 2일', labelEn: '1 Night' },
+    { key: '2-night',   labelKo: '2박 3일', labelEn: '2 Nights' },
+    { key: '3-night',   labelKo: '3박 4일', labelEn: '3 Nights' },
+  ];
+
+  const filteredCourses = activeFilter === 'all' ? courses : courses.filter(c => c.type === activeFilter);
+
+  const typeLabel = (type: CourseType) => {
+    if (type === 'day-trip') return isEn ? 'Day Trip' : '당일';
+    if (type === '1-night')  return isEn ? '1 Night / 2 Days' : '1박 2일';
+    if (type === '2-night')  return isEn ? '2 Nights / 3 Days' : '2박 3일';
+    return isEn ? '3 Nights / 4 Days' : '3박 4일';
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-jm-cream)] text-[var(--color-jm-text)] flex flex-col">
@@ -40,14 +58,34 @@ export default function CoursesPage() {
       {/* Slider Section */}
       <section className="py-12 px-4 sm:px-6 w-full max-w-[100vw] overflow-hidden bg-white/50">
         <div className="max-w-7xl mx-auto mb-6">
-          <h2 className="text-2xl font-bold text-[var(--color-jm-navy)] text-center">
+          <h2 className="text-2xl font-bold text-[var(--color-jm-navy)] text-center mb-6">
             {t("원하시는 테마를 선택해 보세요", "Choose Your Theme")}
           </h2>
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {filters.map(f => (
+              <button
+                key={f.key}
+                onClick={() => {
+                  setActiveFilter(f.key);
+                  const first = f.key === 'all' ? courses[0] : courses.find(c => c.type === f.key);
+                  if (first) setSelectedCourse(first);
+                }}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold border transition-all duration-300 cursor-pointer ${
+                  activeFilter === f.key
+                    ? 'bg-[var(--color-jm-navy)] text-white border-[var(--color-jm-navy)] shadow-md'
+                    : 'bg-white text-[var(--color-jm-navy)] border-[var(--color-jm-border)] hover:border-[var(--color-jm-gold)] hover:text-[var(--color-jm-gold)]'
+                }`}
+              >
+                {isEn ? f.labelEn : f.labelKo}
+              </button>
+            ))}
+          </div>
         </div>
         
         {/* Horizontal Scroll Container */}
         <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 px-4 max-w-5xl mx-auto justify-start md:justify-center">
-          {courses.map((course, index) => {
+          {filteredCourses.map((course, index) => {
             const isSelected = selectedCourse.id === course.id;
             
             return (
@@ -71,7 +109,7 @@ export default function CoursesPage() {
                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full shadow-sm flex items-center gap-1 z-10">
                     <Star className="w-3 h-3 text-[var(--color-jm-gold)] fill-[var(--color-jm-gold)]" />
                     <span className="text-[10px] font-bold text-[var(--color-jm-navy)] tracking-wider">
-                      OPTION 0{index + 1}
+                      {typeLabel(course.type)}
                     </span>
                   </div>
 
