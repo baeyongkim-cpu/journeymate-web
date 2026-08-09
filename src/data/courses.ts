@@ -115,7 +115,7 @@ export const courses: Course[] = [
           { time: "09:00 - 10:30", activityKo: "[조식] 경원재 한옥 조식 & 1:1 호스트 감사 인사를 담을 롤링페이퍼 전달", activityEn: "[Breakfast] Hanok breakfast & 1:1 farewell rolling paper with host's appreciation" },
           { time: "10:30 - 12:30", activityKo: "[체험] 영종도 해안 레일바이크 타고 서해 바다바람 감상", activityEn: "[Activity] Yeongjongdo coastal rail bike ride enjoying West Sea ocean breeze" },
           { time: "12:30 - 14:00", activityKo: "[미식] 영종도 칼국수 & 해산물 파전 오션뷰 점심", activityEn: "[Dining] Yeongjongdo noodle soup & seafood pancake lunch with ocean view" },
-          { time: "14:00 - 15:30", activityKo: "[추억/작별] 3일간 촬영한 4K 시네마틱 하이라이트 영상 함께 시청 & 공항 배웅 (작별)", activityEn: "[Farewell] Watch the 4K cinematic highlight video compiled from 3 days & airport send-off" }
+          { time: "14:00 - 15:30", activityKo: "[추억/작별] 3일간의 추억 공유 및 공항 배웅 (4K 시네마틱 영상은 여행 종료 후 1주일 내 전달)", activityEn: "[Farewell] Share memories of 3 days & airport send-off (4K cinematic video delivered within 1 week after trip)" }
         ]
       }
     ]
@@ -211,7 +211,7 @@ export const courses: Course[] = [
           { time: "08:00 - 09:30", activityKo: "[조식] 사찰 아침 죽 공양 & 템플스테이 회향식", activityEn: "[Breakfast] Temple morning porridge breakfast & templestay completion ceremony" },
           { time: "09:30 - 12:00", activityKo: "[체험] 강화 루지(Luge) 레저 체험 또는 전등사 소나무 숲 산림욕", activityEn: "[Experience] Ganghwa Luge leisure experience or pine forest forest bathing" },
           { time: "12:00 - 13:30", activityKo: "[미식] 강화 밴댕이/꽃게탕 프리미엄 점심", activityEn: "[Dining] Ganghwa local specialty raw fish salad or blue crab stew lunch" },
-          { time: "13:30 - 15:00", activityKo: "[추억/작별] 4K 추억 비디오 상영식 & 공항 프리미엄 샌딩 (작별)", activityEn: "[Farewell] 4K memory video screening & premium airport drop-off" }
+          { time: "13:30 - 15:00", activityKo: "[추억/작별] 차담 및 여행 소감 나누기 & 공항 프리미엄 샌딩 (4K 시네마틱 영상은 1주일 내 전달)", activityEn: "[Farewell] Tea chat & sharing trip impressions, premium airport drop-off (4K cinematic video delivered within 1 week)" }
         ]
       }
     ]
@@ -294,7 +294,7 @@ export const courses: Course[] = [
           { time: "09:00 - 10:30", activityKo: "[조식] 섬 특산물 전복죽 조식 & 호스트 감사의 글 전달", activityEn: "[Breakfast] Island specialty abalone porridge breakfast & thank you letter from host" },
           { time: "10:30 - 12:30", activityKo: "[체험] 소무의도 인도교 걷기 & 떼무리 도보 해안길 산책", activityEn: "[Activity] Walking across Somuuido pedestrian bridge & trekking along Taemuri coastal path" },
           { time: "12:30 - 14:00", activityKo: "[미식] 인천 영종도 오션뷰 카페 브런치 점심", activityEn: "[Dining] Yeongjongdo ocean-view cafe brunch lunch" },
-          { time: "14:00 - 15:30", activityKo: "[추억/작별] 4K 시네마틱 숏폼 상영 & 공항 프라이빗 샌딩 (눈물의 작별)", activityEn: "[Farewell] Watch the 4K cinematic highlight video & private airport send-off" }
+          { time: "14:00 - 15:30", activityKo: "[추억/작별] 3일간의 스냅 리뷰 및 공항 프라이빗 샌딩 (4K 시네마틱 영상은 1주일 내 전달)", activityEn: "[Farewell] Snap photo review & private airport send-off (4K cinematic video delivered within 1 week)" }
         ]
       }
     ]
