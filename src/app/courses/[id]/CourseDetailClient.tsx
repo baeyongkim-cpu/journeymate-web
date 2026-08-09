@@ -6,11 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Moon, MapPin, DollarSign, Calendar, MessageCircle, ArrowLeft, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function CourseDetailClient({ course }: { course: Course }) {
   const { t, lang } = useLanguage();
   const isEn = lang === 'en';
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  
+  // For the accordion: keep track of which day is expanded. Default to day 1.
+  const [expandedDay, setExpandedDay] = useState<number | null>(1);
+
 
   return (
     <div className="min-h-screen bg-[var(--color-jm-cream)] text-[var(--color-jm-text)]">
@@ -90,12 +94,12 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 <span className="font-medium text-lg text-[var(--color-jm-navy)]">
                   {isEn ? course.details.duration.en : course.details.duration.ko}
                 </span>
-                <button
-                  onClick={() => setIsScheduleOpen(true)}
+                <a
+                  href="#itinerary"
                   className="px-3 py-1 text-xs border border-[var(--color-jm-gold)] text-[var(--color-jm-gold)] hover:bg-[var(--color-jm-gold)] hover:text-white rounded-full transition-all duration-300 font-medium cursor-pointer"
                 >
-                  {t("세부일정 확인", "View Details")}
-                </button>
+                  {t("세부일정 보기", "View Itinerary")}
+                </a>
               </div>
             </div>
             
@@ -128,8 +132,109 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           </div>
         </div>
 
+        {/* Accordion Schedule & Map Section */}
+        {course.schedule && course.schedule.length > 0 && (
+          <div id="itinerary" className="mb-16 pt-8">
+            <h2 className="text-2xl font-bold text-[var(--color-jm-navy)] mb-8 flex items-center gap-4">
+              <span className="w-8 h-[1px] bg-[var(--color-jm-gold)]"></span>
+              {t("상세 여정", "Detailed Itinerary")}
+            </h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              {/* Accordion List */}
+              <div className="flex flex-col gap-4">
+                {course.schedule.map((dayPlan) => {
+                  const isExpanded = expandedDay === dayPlan.day;
+                  return (
+                    <div 
+                      key={dayPlan.day} 
+                      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'border-[var(--color-jm-gold)] shadow-md bg-white' : 'border-[var(--color-jm-border)] bg-[var(--color-jm-cream)] hover:bg-white'}`}
+                    >
+                      <button 
+                        onClick={() => setExpandedDay(isExpanded ? null : dayPlan.day)}
+                        className="w-full flex items-center justify-between p-5 text-left cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`text-sm font-bold px-3 py-1 rounded-full transition-colors ${isExpanded ? 'bg-[var(--color-jm-gold)] text-white' : 'bg-gray-200 text-gray-600'}`}>
+                            Day {String(dayPlan.day).padStart(2, '0')}
+                          </div>
+                          <h4 className={`font-bold text-lg ${isExpanded ? 'text-[var(--color-jm-navy)]' : 'text-gray-700'}`}>
+                            {isEn ? dayPlan.themeEn : dayPlan.themeKo}
+                          </h4>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronUp className="w-5 h-5 text-[var(--color-jm-gold)]" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                      
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="p-5 pt-0 border-t border-gray-100 mt-2">
+                              <div className="space-y-4 pt-4 relative">
+                                <div className="absolute left-2.5 top-6 bottom-4 w-[1px] bg-[var(--color-jm-gold)]/30" />
+                                {dayPlan.items.map((item, itemIdx) => (
+                                  <div key={itemIdx} className="relative flex flex-col md:flex-row gap-2 md:gap-4 pl-8 group">
+                                    <div className="absolute left-1.5 top-1.5 w-2.5 h-2.5 rounded-full bg-[var(--color-jm-gold)] border-2 border-white" />
+                                    <span className="text-sm font-bold text-[var(--color-jm-gold)] tracking-wider md:w-32 shrink-0 pt-0.5">
+                                      {item.time}
+                                    </span>
+                                    <span className="text-[15px] font-medium text-gray-700 leading-relaxed break-keep">
+                                      {isEn ? item.activityEn : item.activityKo}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Sticky Map Area */}
+              <div className="sticky top-24 rounded-3xl overflow-hidden shadow-lg border border-[var(--color-jm-border)] bg-white h-[400px] lg:h-[600px] relative flex flex-col">
+                <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000&auto=format&fit=crop')" }}></div>
+                <div className="relative z-10 flex flex-col h-full items-center justify-center p-8 text-center bg-black/20 backdrop-blur-sm">
+                  <MapPin className="w-16 h-16 text-[var(--color-jm-gold)] mb-4 animate-bounce" />
+                  <h3 className="text-2xl font-bold text-white mb-2 font-serif">
+                    {t("여정 지도", "Journey Map")}
+                  </h3>
+                  <p className="text-white/90">
+                    {expandedDay 
+                      ? t(`Day ${expandedDay}의 경로를 확인하세요.`, `View the route for Day ${expandedDay}.`) 
+                      : t("지도를 통해 전체 이동 경로를 파악할 수 있습니다.", "Explore the full travel route on the map.")}
+                  </p>
+                  
+                  {/* Decorative element to simulate map routes */}
+                  <div className="mt-8 p-4 bg-white/10 rounded-xl backdrop-blur-md border border-white/20 w-full max-w-sm">
+                    <div className="flex items-center justify-between text-white text-sm font-bold">
+                      <span>{t("출발", "Start")}</span>
+                      <div className="flex-1 h-[1px] bg-dashed border-b border-white/50 mx-4"></div>
+                      <span className="text-[var(--color-jm-gold)]">
+                        Day {expandedDay || "1"}
+                      </span>
+                      <div className="flex-1 h-[1px] bg-dashed border-b border-white/50 mx-4"></div>
+                      <span>{t("종료", "End")}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* CTA */}
-        <div className="text-center">
+        <div className="text-center mt-12">
           <a 
             href={`https://wa.me/821099008210?text=${encodeURIComponent(`Hello! I'm interested in booking [${course.titleEn}].`)}`}
             target="_blank" rel="noopener noreferrer"
@@ -141,96 +246,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </div>
 
       </section>
-
-      {/* Detailed Schedule Modal */}
-      <AnimatePresence>
-        {isScheduleOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-            onClick={() => setIsScheduleOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col relative border border-[var(--color-jm-border)]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="p-6 md:p-8 bg-[var(--color-jm-navy)] text-white relative">
-                <button
-                  onClick={() => setIsScheduleOpen(false)}
-                  className="absolute top-6 right-6 text-white/70 hover:text-white transition-opacity cursor-pointer"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-jm-gold)] block mb-1">
-                  {t("상세 세부 일정", "DETAILED ITINERARY")}
-                </span>
-                <h3 className="text-2xl font-bold tracking-tight mb-2 font-serif text-white">
-                  {isEn ? course.titleEn : course.titleKo}
-                </h3>
-                <p className="text-white/85 text-xs font-light break-keep">
-                  {isEn ? course.subtitleEn : course.subtitleKo}
-                </p>
-              </div>
-
-              {/* Body (Timeline scroll) */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-[var(--color-jm-cream)]">
-                {course.schedule.map((dayPlan) => (
-                  <div key={dayPlan.day} className="relative">
-                    {/* Day Title */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="bg-[var(--color-jm-gold)] text-white font-bold text-sm px-3 py-1 rounded-full shadow-sm">
-                        Day 0{dayPlan.day}
-                      </div>
-                      <h4 className="font-bold text-[var(--color-jm-navy)] text-base tracking-tight">
-                        {isEn ? dayPlan.themeEn : dayPlan.themeKo}
-                      </h4>
-                    </div>
-
-                    {/* Timeline line */}
-                    <div className="absolute left-5 top-12 bottom-4 w-[1px] bg-[var(--color-jm-gold)]/20" />
-
-                    {/* Day Items */}
-                    <div className="space-y-6 pl-10">
-                      {dayPlan.items.map((item, itemIdx) => (
-                        <div key={itemIdx} className="relative flex flex-col md:flex-row md:items-start gap-1 md:gap-4 group">
-                          {/* Dot on line */}
-                          <div className="absolute -left-10 top-1.5 w-2.5 h-2.5 rounded-full bg-[var(--color-jm-gold)] border border-white group-hover:scale-125 transition-transform duration-300" />
-                          
-                          {/* Time */}
-                          <span className="text-xs font-bold text-[var(--color-jm-gold)] tracking-wider md:w-28 shrink-0">
-                            {item.time}
-                          </span>
-
-                          {/* Activity */}
-                          <span className="text-sm font-medium text-[var(--color-jm-text)] leading-relaxed break-keep">
-                            {isEn ? item.activityEn : item.activityKo}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div className="p-6 border-t border-[var(--color-jm-border)] bg-white flex justify-end">
-                <button
-                  onClick={() => setIsScheduleOpen(false)}
-                  className="px-6 py-2.5 bg-[var(--color-jm-navy)] text-white text-sm font-bold rounded-full hover:bg-[var(--color-jm-gold)] transition-colors cursor-pointer"
-                >
-                  {t("닫기", "Close")}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

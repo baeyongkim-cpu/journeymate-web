@@ -23,24 +23,29 @@ export interface SubExperience {
 
 const categoryList = [
   { id: 'culture', labelKo: '문화 & 역사', labelEn: 'Culture & History', icon: '🏛️' },
-  { id: 'food', labelKo: '미식 & 시장', labelEn: 'Food & Traditional Markets', icon: '🍢' },
-  { id: 'nature', labelKo: '자연 & 섬 힐링', labelEn: 'Nature & Private Islands', icon: '🏝️' },
-  { id: 'city', labelKo: '시티 & 스카이라인', labelEn: 'City & Future Skyline', icon: '🏙️' },
-  { id: 'photo', labelKo: '스냅 & 4K 시네마틱 촬영', labelEn: 'Snap Photo & 4K Cinema', icon: '📸' }
+  { id: 'food', labelKo: '미식 & 카페', labelEn: 'Food & Cafe', icon: '🍢' },
+  { id: 'nature', labelKo: '자연 & 힐링', labelEn: 'Nature & Healing', icon: '🏝️' },
+  { id: 'city', labelKo: '시티 & 스카이라인', labelEn: 'City & Skyline', icon: '🏙️' },
+  { id: 'activity', labelKo: '액티비티 & 체험', labelEn: 'Activity & Experience', icon: '🏄' },
+  { id: 'wellness', labelKo: '웰니스 & 스파', labelEn: 'Wellness & Spa', icon: '💆‍♀️' },
+  { id: 'photo', labelKo: '스냅 & 시네마틱', labelEn: 'Snap & Cinematic', icon: '📸' }
 ];
 
 const subExperiences: SubExperience[] = [
-  // 문화 & 역사 (개항장거점)
+  // 문화 & 역사 (개항장/강화도)
   { id: 'heritage-walk', categoryId: 'culture', labelKo: '130년 헤리티지 근대 건축 워크', labelEn: '130-Year Heritage Walk', locationKo: '개항장', locationEn: 'Gaehangro' },
   { id: 'chinatown', categoryId: 'culture', labelKo: '한국 최초 차이나타운 스토리 투어', labelEn: 'Chinatown History & Food Walk', locationKo: '차이나타운', locationEn: 'Chinatown' },
   { id: 'fairytale', categoryId: 'culture', labelKo: '송월동 동화마을 스냅 산책', labelEn: 'Fairy Tale Village Snap Walk', locationKo: '동화마을', locationEn: 'Fairy Tale Village' },
+  { id: 'jeondeungsa', categoryId: 'culture', labelKo: '전등사 천년 사찰 & 템플스테이', labelEn: 'Jeondeungsa Temple & Stay', locationKo: '강화도', locationEn: 'Ganghwa' },
+  { id: 'dolmen', categoryId: 'culture', labelKo: '강화 고인돌 유적지 (UNESCO)', labelEn: 'Ganghwa Dolmens (UNESCO)', locationKo: '강화도', locationEn: 'Ganghwa' },
 
-  // 미식 & 시장 (신포시장거점)
+  // 미식 & 카페 (신포시장/강화도)
   { id: 'sinpo-food', categoryId: 'food', labelKo: '신포국제시장 스트릿 푸드 탐방', labelEn: 'Sinpo Traditional Market Foodie Tour', locationKo: '신포시장', locationEn: 'Sinpo Market' },
   { id: 'k-dessert', categoryId: 'food', labelKo: 'K-디저트(앙금플라워/떡) 만들기 클래스', labelEn: 'K-Dessert Making Class', locationKo: '신포시장', locationEn: 'Sinpo Market' },
   { id: 'home-cooking', categoryId: 'food', labelKo: '신선한 로컬 재료로 즐기는 한식 쿠킹', labelEn: 'Local Korean Home Cooking Class', locationKo: '신포시장', locationEn: 'Sinpo Market' },
+  { id: 'joyangbanjik', categoryId: 'food', labelKo: '조양방직 레트로 카페 탐방', labelEn: 'Joyangbanjik Retro Cafe', locationKo: '강화도', locationEn: 'Ganghwa' },
 
-  // 자연 & 섬 힐링 (무의도/신시모도거점)
+  // 자연 & 힐링 (무의도/신시모도)
   { id: 'beach-bbq', categoryId: 'nature', labelKo: '프라이빗 섬 프라이빗 해변 바비큐', labelEn: 'Private Beach Barbecue', locationKo: '무의도/신시모도', locationEn: 'Private Island' },
   { id: 'coastal-trek', categoryId: 'nature', labelKo: '해안길 데크 트레킹 & 파도 소리 명상', labelEn: 'Coastal Trail Trekking & Wave Meditation', locationKo: '무의도', locationEn: 'Muuido Island' },
   { id: 'sunset-meditation', categoryId: 'nature', labelKo: '서해 일몰 불멍 & 파이어핏 대화', labelEn: 'Sunset View & Island Fire Pit Conversation', locationKo: '신시모도', locationEn: 'Sinsimodo Island' },
@@ -49,6 +54,15 @@ const subExperiences: SubExperience[] = [
   { id: 'park-boat', categoryId: 'city', labelKo: '송도 센트럴파크 호수 프라이빗 보팅', labelEn: 'Central Park Private Boating', locationKo: '송도국제도시', locationEn: 'Songdo City' },
   { id: 'gtower-view', categoryId: 'city', labelKo: 'G타워 파노라마 스카이라인 전망대', labelEn: 'G-Tower Observatory Panoramic View', locationKo: '송도국제도시', locationEn: 'Songdo City' },
   { id: 'canal-walk', categoryId: 'city', labelKo: '송도 수로 커낼워크 리조트풍 산책', labelEn: 'European Canal Walk Promenade', locationKo: '송도국제도시', locationEn: 'Songdo City' },
+
+  // 액티비티 & 체험 (영종도/무의도)
+  { id: 'railbike', categoryId: 'activity', labelKo: '영종 씨사이드 레일바이크', labelEn: 'Yeongjong Seaside Rail Bike', locationKo: '영종도', locationEn: 'Yeongjong Island' },
+  { id: 'boat-fishing', categoryId: 'activity', labelKo: '로컬 어부와 함께하는 선상 낚시', labelEn: 'Boat Fishing with Local Fisherman', locationKo: '무의도', locationEn: 'Muuido Island' },
+  { id: 'tidal-flat', categoryId: 'activity', labelKo: '서해 갯벌 체험 & 해녀 문화', labelEn: 'West Sea Tidal Flat & Haenyeo', locationKo: '무의도/동막', locationEn: 'West Sea' },
+
+  // 웰니스 & 스파 (영종도)
+  { id: 'cimer-spa', categoryId: 'wellness', labelKo: '파라다이스시티 씨메르 아쿠아 스파', labelEn: 'Paradise City Cimer Spa', locationKo: '영종도', locationEn: 'Yeongjong Island' },
+  { id: 'k-beauty', categoryId: 'wellness', labelKo: 'K-뷰티 스파 & 한방 테라피', labelEn: 'K-Beauty Spa & Herbal Therapy', locationKo: '영종도', locationEn: 'Yeongjong Island' },
 
   // 스냅 & 4K 시네마틱 촬영
   { id: 'snap-photo', categoryId: 'photo', labelKo: '전담 호스트의 1:1 고화질 화보 스냅 촬영', labelEn: '1:1 Personal High-Res Snap Shoot', locationKo: '전 코스', locationEn: 'All Locations' },

@@ -16,7 +16,7 @@ export interface ScheduleDay {
   items: ScheduleItem[];
 }
 
-export type CourseType = 'day-trip' | '1-night' | '2-night' | '3-night';
+export type CourseType = 'day-trip' | '1-night' | '2-night' | '3-night' | '14-night';
 
 export interface Course {
   id: string;
@@ -521,4 +521,212 @@ export const courses: Course[] = [
       }
     ]
   },
+  {
+    id: "grand-tour-15d",
+    type: "14-night",
+    titleKo: "한국일주: 나를 찾는 15일",
+    titleEn: "Grand Tour: Finding Myself in 15 Days",
+    subtitleKo: "인천에서 시작해 전국을 돌아 다시 인천으로, 14박 15일간의 자아 발견과 치유의 여정",
+    subtitleEn: "A 14-night, 15-day journey of self-discovery and healing, starting from Incheon, touring nationwide, and returning to Incheon",
+    image: "https://images.unsplash.com/photo-1517154421773-0529f29ea451?q=80&w=2000&auto=format&fit=crop",
+    meaningKo: [
+      { title: "나와 유산의 발견", desc: "한국의 다채로운 로컬 라이프스타일(미식, 역사, 힐링)을 깊이 체험할 수 있도록 테마를 부여하여 경로를 구성했습니다." },
+      { title: "명상과 치유", desc: "고성 왕곡마을 한옥 체험, 동해안 드라이브, 해동용궁사 일몰 참배 등 자연 속의 명상과 치유를 경험합니다." },
+      { title: "현대사의 애환과 예술", desc: "감천문화마을, 오동도 동백열차, 광주 5.18 민주묘지 참배 등 민주주의와 예술의 혼을 느낍니다." }
+    ],
+    meaningEn: [
+      { title: "Discovery of Self & Heritage", desc: "The route is themed to allow you to deeply experience Korea's diverse local lifestyles (gastronomy, history, healing)." },
+      { title: "Meditation & Healing", desc: "Experience meditation and healing in nature through Goseong Wanggok Hanok Village, East Coast drive, and Haedong Yonggungsa sunset prayer." },
+      { title: "Modern History's Joy & Sorrow and Art", desc: "Feel the spirit of democracy and art at Gamcheon Culture Village, Odongdo Camellia Train, and Gwangju May 18th Democratic Cemetery." }
+    ],
+    details: {
+      duration: { ko: "14박 15일", en: "14 Nights / 15 Days" },
+      accommodation: { ko: "전국 각지 최고급 호텔, 한옥 풀빌라, 프라이빗 리조트", en: "Premium hotels, Hanok pool villas, private resorts across the country" },
+      timing: { ko: "봄, 가을 추천", en: "Recommended in Spring and Autumn" },
+      price: { ko: "1팀(2~4인 기준) 36,000,000원", en: "KRW 36,000,000 per team (2-4 pax)" },
+    },
+    schedule: [
+      {
+        day: 1,
+        themeKo: "인천 (시작점, 개항과 융합)",
+        themeEn: "Incheon (Starting Point, Open Port & Fusion)",
+        items: [
+          { time: "10:00 - 12:00", activityKo: "[도착] 인천공항 VIP 픽업 & 영종도 오션뷰 웰컴 티타임", activityEn: "[Arrival] VIP Airport pickup & Yeongjongdo ocean-view welcome tea" },
+          { time: "12:00 - 14:00", activityKo: "[미식] 차이나타운 — 원조 짜장면과 개항장 로컬 미식 체험", activityEn: "[Dining] Chinatown — Original Jjajangmyeon & local gastronomy" },
+          { time: "14:00 - 16:30", activityKo: "[역사] 130년 전 시간이 멈춘 개항장 거리 흑백 스냅 포토투어", activityEn: "[History] Black-and-white snap photo tour in the 130-year-old Open Port street" },
+          { time: "17:00 - 19:30", activityKo: "[미래] 송도국제도시 센트럴파크 수상택시 탑승 & G타워 일몰 감상", activityEn: "[Future] Songdo Central Park water taxi & G-Tower sunset" },
+          { time: "19:30 - 21:00", activityKo: "[감동/Kick] 미래 도시 속 숨겨진 한옥에서의 프라이빗 다도 명상과 첫 환영 다이닝", activityEn: "[Kick] Private tea ceremony meditation & welcome dining in a hidden Hanok amid the futuristic city" }
+        ]
+      },
+      {
+        day: 2,
+        themeKo: "서울 (전통과 트렌드의 공존)",
+        themeEn: "Seoul (Coexistence of Tradition & Trend)",
+        items: [
+          { time: "09:00 - 12:00", activityKo: "[궁궐] 경복궁 수문장 교대식 관람 및 북촌 한옥마을 산책", activityEn: "[Palace] Gyeongbokgung Royal Guard Change & Bukchon walk" },
+          { time: "12:00 - 13:30", activityKo: "[미식] 광화문 인근 미슐랭 가이드 등재 궁중 요리", activityEn: "[Dining] Michelin-guided Royal Cuisine near Gwanghwamun" },
+          { time: "13:30 - 16:00", activityKo: "[트렌드] 성수동 팝업스토어 및 힙스터 카페거리 로컬 투어", activityEn: "[Trend] Seongsu-dong pop-up stores & hipster café street tour" },
+          { time: "16:00 - 19:00", activityKo: "[휴식] 호텔 휴식 및 저녁식사 (자유 일정)", activityEn: "[Rest] Hotel rest and dinner (Free time)" },
+          { time: "19:00 - 22:00", activityKo: "[감동/Kick] 로컬 인디 뮤지션과 함께하는 '힙지로' 골목길 포장마차 투어", activityEn: "[Kick] 'Hipjiro' alley street food tent tour with a local indie musician" }
+        ]
+      },
+      {
+        day: 3,
+        themeKo: "고성 & 속초 (자연 속의 명상과 치유)",
+        themeEn: "Goseong & Sokcho (Meditation & Healing in Nature)",
+        items: [
+          { time: "08:30 - 11:30", activityKo: "[이동] 서울 출발, 강원도로 이동하며 차창 밖 풍경 명상", activityEn: "[Transit] Depart Seoul to Gangwon with scenic window meditation" },
+          { time: "11:30 - 13:30", activityKo: "[역사] 고성 통일전망대 및 DMZ 평화의 길 도보 탐방", activityEn: "[History] Goseong Unification Observatory & DMZ Peace Trail walk" },
+          { time: "13:30 - 17:00", activityKo: "[힐링] 속초 설악산 케이블카 탑승 및 권금성 절경 감상", activityEn: "[Healing] Sokcho Seoraksan Cable Car & Gwongeumseong Fortress" },
+          { time: "17:00 - 19:00", activityKo: "[감동/Kick] 100년 된 고성 왕곡마을 한옥 숙박 및 할머니가 차려주는 시골 밥상", activityEn: "[Kick] Stay at a 100-year-old Hanok in Wanggok Village & enjoy a country meal cooked by a local grandmother" },
+          { time: "19:30 - 21:00", activityKo: "[휴식] 마당 평상에 누워 별을 보며 즐기는 전통차 타임", activityEn: "[Rest] Stargazing on a wooden bench in the yard with traditional tea" }
+        ]
+      },
+      {
+        day: 4,
+        themeKo: "동해안 드라이브 (푸른 파도와 낭만)",
+        themeEn: "East Coast Drive (Blue Waves & Romance)",
+        items: [
+          { time: "09:00 - 11:30", activityKo: "[드라이브] 고성 출발, 7번 국도를 따라 끝없이 펼쳐지는 해안 길", activityEn: "[Drive] Depart Goseong, endless East Coast drive along Route 7" },
+          { time: "11:30 - 14:00", activityKo: "[감동/Kick] 인적이 드문 숨겨진 해변에서 로컬 서퍼가 내려주는 핸드드립 커피와 물멍", activityEn: "[Kick] Watching the waves with hand-drip coffee made by a local surfer at a hidden, nameless beach" },
+          { time: "14:00 - 16:30", activityKo: "[탐방] 동해 추암촛대바위 및 삼척 해상 케이블카 탑승", activityEn: "[Explore] Donghae Chuam Candlestick Rock & Samcheok Marine Cable Car" },
+          { time: "16:30 - 18:30", activityKo: "[이동] 영덕을 거쳐 경주로 이동 (석양빛 해안도로)", activityEn: "[Transit] Transfer to Gyeongju via Yeongdeok (sunset coastal road)" },
+          { time: "19:00 - 21:00", activityKo: "[미식] 경주 로컬 최고급 투뿔 한우 숯불구이 다이닝", activityEn: "[Dining] Gyeongju local premium Hanwoo (Korean beef) charcoal BBQ" }
+        ]
+      },
+      {
+        day: 5,
+        themeKo: "경주 (천년 고도의 숨결)",
+        themeEn: "Gyeongju (Breath of a Thousand-Year Capital)",
+        items: [
+          { time: "09:00 - 12:00", activityKo: "[유산] 불국사 및 석굴암 (UNESCO) 아침 산책", activityEn: "[Heritage] Bulguksa & Seokguram (UNESCO) morning walk" },
+          { time: "12:00 - 13:30", activityKo: "[미식] 경주 전통 쌈밥 정식", activityEn: "[Dining] Gyeongju traditional Ssambap set meal" },
+          { time: "13:30 - 17:00", activityKo: "[트렌드] 황리단길 골목 스냅 및 한옥 카페에서의 휴식", activityEn: "[Trend] Hwangridan-gil alley snap & rest at a Hanok café" },
+          { time: "17:00 - 19:00", activityKo: "[휴식] 프라이빗 료칸/한옥 숙소 체크인 및 저녁 식사", activityEn: "[Rest] Check-in to private Ryokan/Hanok & dinner" },
+          { time: "19:30 - 21:30", activityKo: "[감동/Kick] 로컬 사학자와 함께 청사초롱을 들고 걷는 대릉원 고분군 한밤의 산책", activityEn: "[Kick] Midnight walking tour of Daereungwon Royal Tombs holding traditional lanterns with a local historian" }
+        ]
+      },
+      {
+        day: 6,
+        themeKo: "울산 & 부산 (산업의 역동성과 해양)",
+        themeEn: "Ulsan & Busan (Industrial Dynamism & Ocean)",
+        items: [
+          { time: "09:00 - 10:30", activityKo: "[이동] 경주 출발, 울산으로 이동", activityEn: "[Transit] Depart Gyeongju, transfer to Ulsan" },
+          { time: "10:30 - 12:30", activityKo: "[자연] 울산 태화강 국가정원 십리대숲 대나무 힐링 걷기", activityEn: "[Nature] Ulsan Taehwagang National Garden Bamboo Forest healing walk" },
+          { time: "12:30 - 14:00", activityKo: "[감동/Kick] 40년 전통 골목 식당에서 할머니가 끓여주는 돼지국밥과 부산 산업화 시대 이야기", activityEn: "[Kick] Pork soup (Gukbap) cooked by a grandmother at a 40-year-old alley restaurant, hearing stories of Busan's industrial era" },
+          { time: "14:00 - 16:00", activityKo: "[이동] 부산 해운대 이동 및 최고급 오션뷰 호텔 체크인", activityEn: "[Transit] Transfer to Busan Haeundae & premium ocean-view hotel" },
+          { time: "16:00 - 18:30", activityKo: "[휴식] 해운대 해변 산책 및 달맞이길 로컬 티타임", activityEn: "[Rest] Haeundae Beach walk & Dalmaji-gil local tea time" },
+          { time: "19:00 - 21:30", activityKo: "[나이트라이프] 해운대 프라이빗 요트 투어 (광안대교 야경)", activityEn: "[Nightlife] Haeundae Private Yacht Tour (Gwangandaegyo Bridge night view)" }
+        ]
+      },
+      {
+        day: 7,
+        themeKo: "부산 (근대사의 애환과 예술)",
+        themeEn: "Busan (Modern History's Joy & Sorrow and Art)",
+        items: [
+          { time: "09:30 - 12:30", activityKo: "[문화] 감천문화마을 골목길 투어 (한국의 마추픽추)", activityEn: "[Culture] Gamcheon Culture Village alley tour (Machu Picchu of Korea)" },
+          { time: "12:30 - 14:00", activityKo: "[미식] 영도 해녀촌 로컬 성게김밥 및 해산물 점심", activityEn: "[Dining] Yeongdo Haenyeo Village local sea urchin gimbap & seafood" },
+          { time: "14:00 - 16:30", activityKo: "[예술] 흰여울문화마을 절영해안산책로 도보 명상", activityEn: "[Art] Huinnyeoul Culture Village & Jeoryeong Coastal Trail meditation" },
+          { time: "17:00 - 19:00", activityKo: "[사찰] 바다와 가장 가까운 사찰, 해동용궁사 일몰 참배", activityEn: "[Temple] Haedong Yonggungsa (temple closest to the sea) sunset prayer" },
+          { time: "19:30 - 21:30", activityKo: "[감동/Kick] 영도 항구가 내려다보이는 숨은 LP바에서 로컬 예술가들과 70년대 시티팝 감상", activityEn: "[Kick] Listening to 70s Korean City Pop with local artists at a hidden LP bar overlooking Yeongdo Harbor" }
+        ]
+      },
+      {
+        day: 8,
+        themeKo: "여수 (밤바다와 남도의 낭만)",
+        themeEn: "Yeosu (Night Sea & Southern Romance)",
+        items: [
+          { time: "09:00 - 12:00", activityKo: "[이동] 부산 출발, 남해안의 비경을 따라 여수로 이동", activityEn: "[Transit] Depart Busan, travel to Yeosu along the scenic South Coast" },
+          { time: "12:00 - 13:30", activityKo: "[미식] 여수 갓김치와 게장 백반 정식", activityEn: "[Dining] Yeosu Gatkimchi & marinated crab set meal" },
+          { time: "13:30 - 16:00", activityKo: "[자연] 오동도 동백숲 트레킹 및 동백열차 탑승", activityEn: "[Nature] Odongdo Camellia Forest trekking & Camellia Train" },
+          { time: "16:00 - 18:00", activityKo: "[전망] 여수 해상 케이블카 탑승 및 돌산공원 일몰", activityEn: "[Viewpoint] Yeosu Marine Cable Car & Dolsan Park sunset" },
+          { time: "18:30 - 22:00", activityKo: "[감동/Kick] 로컬 어부의 작은 배를 타고 밤바다로 나가 직접 잡은 해산물을 선상에서 요리해 먹는 낭만", activityEn: "[Kick] Sailing on a small fishing boat at night to catch and cook fresh seafood right on the boat under the stars" }
+        ]
+      },
+      {
+        day: 9,
+        themeKo: "순천 & 진도 (생태의 위대함과 소리)",
+        themeEn: "Suncheon & Jindo (Greatness of Ecology & Sound)",
+        items: [
+          { time: "08:30 - 10:00", activityKo: "[이동] 여수 출발, 순천 생태공원으로 이동", activityEn: "[Transit] Depart Yeosu to Suncheon Ecological Park" },
+          { time: "10:00 - 13:00", activityKo: "[생태] 순천만 국가정원 및 순천만 습지 갈대밭 생태 탐방", activityEn: "[Ecology] Suncheonman National Garden & Wetland reed fields" },
+          { time: "13:00 - 14:30", activityKo: "[미식] 순천 꼬막 정식", activityEn: "[Dining] Suncheon cockle set meal" },
+          { time: "14:30 - 17:00", activityKo: "[자연] 진도로 이동, 신비의 바닷길 및 세방낙조 일몰", activityEn: "[Nature] Transfer to Jindo, Sea Parting & Sebang Nakjo sunset" },
+          { time: "17:30 - 20:00", activityKo: "[감동/Kick] 대나무 숲 속 한옥에서 판소리 명창에게 직접 배우는 한국의 '한'과 '흥'", activityEn: "[Kick] Private Pansori lesson by a local master in a bamboo forest, learning to express deep Korean sorrow (Han) and joy (Heung)" }
+        ]
+      },
+      {
+        day: 10,
+        themeKo: "제주도 (생명의 기원, 화산섬)",
+        themeEn: "Jeju (Origin of Life, Volcanic Island)",
+        items: [
+          { time: "08:00 - 10:00", activityKo: "[이동] 진도항에서 제주행 프리미엄 카페리 탑승 (해상 관람)", activityEn: "[Transit] Premium car ferry from Jindo to Jeju (viewing Dadohae archipelago)" },
+          { time: "10:30 - 12:30", activityKo: "[자연] 한라산 어승생악 트레킹 (초보자용 정상 뷰코스)", activityEn: "[Nature] Hallasan Eoseungsaengak Trekking (beginner-friendly peak view)" },
+          { time: "12:30 - 14:00", activityKo: "[미식] 제주 흑돼지 장작구이 점심", activityEn: "[Dining] Jeju Black Pork wood-fired BBQ lunch" },
+          { time: "14:00 - 17:00", activityKo: "[휴식] 애월 해안도로 뷰 감상 및 제주 특급 리조트 체크인", activityEn: "[Rest] Aewol Coastal Road view & Jeju luxury resort check-in" },
+          { time: "18:00 - 20:30", activityKo: "[감동/Kick] 인적 없는 삼나무 숲 깊은 곳에서 현지 스님과 함께하는 프라이빗 숲 명상", activityEn: "[Kick] Private forest meditation session led by a local monk in a hidden cedar forest" }
+        ]
+      },
+      {
+        day: 11,
+        themeKo: "제주도 (해녀 문화와 치유)",
+        themeEn: "Jeju (Haenyeo Culture & Healing)",
+        items: [
+          { time: "05:30 - 08:30", activityKo: "[자연] 성산일출봉 정상 해돋이 등반 및 장엄한 아침", activityEn: "[Nature] Seongsan Ilchulbong sunrise hike & majestic morning" },
+          { time: "09:00 - 11:30", activityKo: "[문화] 제주 해녀 박물관 및 실제 해녀 물질 시연 관람", activityEn: "[Culture] Jeju Haenyeo Museum & actual Haenyeo diving demonstration" },
+          { time: "12:00 - 15:00", activityKo: "[감동/Kick] 바닷가 갯바위에서 현직 해녀 할머니들과 함께 방금 딴 전복과 뿔소라를 먹으며 듣는 해녀의 삶 이야기", activityEn: "[Kick] Eating freshly caught abalone on the rocky shore with real Haenyeo (women divers) while listening to their life stories" },
+          { time: "15:30 - 17:30", activityKo: "[다도] 오설록 티 뮤지엄 차밭 투어 및 프리미엄 다도 체험", activityEn: "[Tea] Osulloc Tea Museum plantation tour & premium tea ceremony" },
+          { time: "18:00 - 20:30", activityKo: "[휴식] 중문 색달해변 일몰 요가 및 프라이빗 스파 마사지", activityEn: "[Rest] Jungmun Saekdal Beach sunset yoga & private spa massage" }
+        ]
+      },
+      {
+        day: 12,
+        themeKo: "광주 (민주주의와 예술의 혼)",
+        themeEn: "Gwangju (Spirit of Democracy & Art)",
+        items: [
+          { time: "08:30 - 10:00", activityKo: "[이동] 제주공항 출발, 광주공항 도착", activityEn: "[Transit] Depart Jeju Airport, arrive at Gwangju Airport" },
+          { time: "10:30 - 12:30", activityKo: "[역사] 국립 5.18 민주묘지 참배 및 현대사 다큐멘터리 관람", activityEn: "[History] May 18th Democratic Cemetery visit & modern history docu" },
+          { time: "12:30 - 14:00", activityKo: "[예술] 광주 비엔날레 전시관 또는 국립아시아문화전당(ACC)", activityEn: "[Art] Gwangju Biennale Hall or Asia Culture Center (ACC)" },
+          { time: "14:30 - 17:30", activityKo: "[문화] 양림동 근대역사문화마을 도보 투어 및 펭귄마을 스냅", activityEn: "[Culture] Yangnim-dong Modern History Village & Penguin Village snap" },
+          { time: "18:00 - 21:00", activityKo: "[감동/Kick] 현지 광주 가족의 집으로 초대받아 맛보는 30첩 반상의 진정한 '남도 한정식'과 한국의 '정(情)' 체험", activityEn: "[Kick] Invited to a local Gwangju family's home for a 30-dish 'Namdo Hanjeongsik' dinner, experiencing true Korean 'Jeong' (affection)" }
+        ]
+      },
+      {
+        day: 13,
+        themeKo: "전주 & 대전 (선비 정신과 과학)",
+        themeEn: "Jeonju & Daejeon (Scholar Spirit & Science)",
+        items: [
+          { time: "09:00 - 10:30", activityKo: "[이동] 광주 출발, 전주 한옥마을 도착", activityEn: "[Transit] Depart Gwangju, arrive at Jeonju Hanok Village" },
+          { time: "10:30 - 12:30", activityKo: "[전통] 프리미엄 한복 대여 및 경기전, 전동성당 포토 투어", activityEn: "[Tradition] Premium Hanbok rental, Gyeonggijeon & Jeondong Cathedral photo tour" },
+          { time: "12:30 - 14:30", activityKo: "[감동/Kick] 전주 무형문화재 장인과 함께 세상에 하나뿐인 나만의 한글 '수제 도장' 새기기", activityEn: "[Kick] Carving your own personalized Korean name seal (Dojang) with an intangible cultural heritage master in Jeonju" },
+          { time: "14:30 - 16:00", activityKo: "[이동] 대전으로 이동", activityEn: "[Transit] Transfer to Daejeon" },
+          { time: "16:00 - 18:30", activityKo: "[탐방] 대전 엑스포 과학공원, 한밭수목원 힐링 산책", activityEn: "[Explore] Daejeon Expo Science Park & Hanbat Arboretum healing walk" },
+          { time: "19:00 - 21:00", activityKo: "[미식] 대전 성심당 빵지순례 및 럭셔리 다이닝", activityEn: "[Dining] Daejeon Sungsimdang bakery pilgrimage & luxury dining" }
+        ]
+      },
+      {
+        day: 14,
+        themeKo: "부여 & 공주 (백제의 숨결)",
+        themeEn: "Buyeo & Gongju (Breath of Baekje)",
+        items: [
+          { time: "09:30 - 12:30", activityKo: "[역사] 공주 무령왕릉 및 공산성 (백제역사유적지구) 탐방", activityEn: "[History] Gongju Tomb of King Muryeong & Gongsanseong Fortress" },
+          { time: "12:30 - 14:00", activityKo: "[미식] 부여 연잎밥 정식", activityEn: "[Dining] Buyeo lotus leaf rice set meal" },
+          { time: "14:00 - 16:30", activityKo: "[탐방] 부여 부소산성, 낙화암 투어 및 백제문화단지", activityEn: "[Explore] Buyeo Busosanseong, Nakhwaam tour & Baekje Cultural Land" },
+          { time: "17:00 - 19:00", activityKo: "[감동/Kick] 노을 지는 백마강에서 황포돛배를 띄워놓고 듣는 구슬픈 전통 대금 독주", activityEn: "[Kick] Floating on a wooden sailboat on the Baengma River at sunset, listening to a soul-stirring traditional Daeguem (bamboo flute) solo" },
+          { time: "19:00 - 21:00", activityKo: "[이동] 14일간의 추억 회고하며 인천 송도로 복귀", activityEn: "[Transit] Returning to Incheon Songdo, reflecting on the 14-day journey" }
+        ]
+      },
+      {
+        day: 15,
+        themeKo: "인천 (새로운 시작)",
+        themeEn: "Incheon (New Beginning)",
+        items: [
+          { time: "08:30 - 10:30", activityKo: "[조식] 특급 호텔 룸서비스 조식 및 여유로운 아침", activityEn: "[Breakfast] Luxury hotel room service & relaxing morning" },
+          { time: "10:30 - 12:30", activityKo: "[감동/Kick] 1년 뒤 나에게 쓰는 한지 편지 (호스트가 1년 뒤 국제 우편 발송) 및 작별의 원형 교감", activityEn: "[Kick] Writing a letter on Hanji paper to your future self (host will mail it internationally in a year) & final farewell circle" },
+          { time: "12:30 - 14:00", activityKo: "[마무리] 송도 오션뷰 페어웰 디너 및 15일간의 여정을 담은 시네마틱 하이라이트 영상 시사", activityEn: "[Finale] Ocean-view farewell dinner & premiere of your 15-day cinematic highlight video" },
+          { time: "14:00 - 15:00", activityKo: "[귀환] 전담 호스트의 공항 VIP 샌딩 서비스", activityEn: "[Return] Airport VIP drop-off service by dedicated host" }
+        ]
+      }
+    ]
+  }
 ];

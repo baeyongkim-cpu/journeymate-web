@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, ChevronDown, MessageCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { destinations, parentTrack, kidsTrack } from '@/data/destinations';
+import { courses } from '@/data/courses';
+import GrandTourClient from '@/app/courses/[id]/GrandTourClient';
 
 export default function DestinationsPage() {
   const { t } = useLanguage();
@@ -12,6 +14,9 @@ export default function DestinationsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const filteredDestinations = destinations.filter(d => d.category === activeTab);
+  
+  // Find the grand-tour course data
+  const grandTourCourse = courses.find(c => c.id === 'grand-tour-15d');
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -21,6 +26,44 @@ export default function DestinationsPage() {
     const msg = encodeURIComponent(`Hello! I'm interested in the "${subName}" experience.`);
     window.open(`https://wa.me/821099008210?text=${msg}`, '_blank');
   };
+
+  if (activeTab === 'beyond-incheon' && grandTourCourse) {
+    return (
+      <div className="min-h-screen bg-[var(--color-jm-cream)] text-[var(--color-jm-text)] pt-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="flex justify-center">
+            <div className="inline-flex border-b border-[var(--color-jm-border)]">
+              <button
+                onClick={() => setActiveTab('incheon-core')}
+                className={`px-8 py-4 text-lg font-medium transition-colors relative ${
+                  activeTab === 'incheon-core' ? 'text-[var(--color-jm-navy)]' : 'text-gray-500 hover:text-[var(--color-jm-navy)]'
+                }`}
+              >
+                {t('인천 코어', 'Incheon Core')}
+              </button>
+              <button
+                onClick={() => setActiveTab('beyond-incheon')}
+                className={`px-8 py-4 text-lg font-medium transition-colors relative ${
+                  activeTab === 'beyond-incheon' ? 'text-[var(--color-jm-navy)]' : 'text-gray-500 hover:text-[var(--color-jm-navy)]'
+                }`}
+              >
+                {t('비욘드 인천', 'Beyond Incheon')}
+                <motion.div
+                  layoutId="tab-indicator"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-jm-gold)]"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Full bleed component */}
+        <div className="w-full">
+          <GrandTourClient course={grandTourCourse} isEmbedded={true} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--color-jm-cream)] text-[var(--color-jm-text)] pt-28 pb-20">
@@ -44,7 +87,7 @@ export default function DestinationsPage() {
                 activeTab === 'incheon-core' ? 'text-[var(--color-jm-navy)]' : 'text-gray-500 hover:text-[var(--color-jm-navy)]'
               }`}
             >
-              ⚓ {t('인천 코어', 'Incheon Core')}
+              {t('인천 코어', 'Incheon Core')}
               {activeTab === 'incheon-core' && (
                 <motion.div
                   layoutId="tab-indicator"
@@ -58,13 +101,7 @@ export default function DestinationsPage() {
                 activeTab === 'beyond-incheon' ? 'text-[var(--color-jm-navy)]' : 'text-gray-500 hover:text-[var(--color-jm-navy)]'
               }`}
             >
-              🇰🇷 {t('비욘드 인천', 'Beyond Incheon')}
-              {activeTab === 'beyond-incheon' && (
-                <motion.div
-                  layoutId="tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-jm-gold)]"
-                />
-              )}
+              {t('비욘드 인천', 'Beyond Incheon')}
             </button>
           </div>
         </div>

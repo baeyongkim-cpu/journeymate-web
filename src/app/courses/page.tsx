@@ -5,6 +5,7 @@ import { useLanguage } from "@/lib/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { courses, CourseType } from "@/data/courses";
 import { Clock, Moon, MapPin, DollarSign, Calendar, MessageCircle, Star, X, Sun, Sunset, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export default function CoursesPage() {
   const { t, lang } = useLanguage();
@@ -214,12 +215,21 @@ export default function CoursesPage() {
                     <span className="font-medium text-base text-[var(--color-jm-navy)]">
                       {isEn ? selectedCourse.details.duration.en : selectedCourse.details.duration.ko}
                     </span>
-                    <button
-                      onClick={() => setIsScheduleOpen(true)}
-                      className="px-3 py-1 text-xs border border-[var(--color-jm-gold)] text-[var(--color-jm-gold)] hover:bg-[var(--color-jm-gold)] hover:text-white rounded-full transition-all duration-300 font-medium cursor-pointer"
-                    >
-                      {t("세부일정 확인", "View Details")}
-                    </button>
+                    {selectedCourse.id === 'grand-tour-15d' ? (
+                      <Link
+                        href={`/courses/${selectedCourse.id}`}
+                        className="px-3 py-1 text-xs border border-[var(--color-jm-gold)] bg-[var(--color-jm-gold)] text-white hover:bg-[var(--color-jm-navy)] hover:border-[var(--color-jm-navy)] rounded-full transition-all duration-300 font-bold cursor-pointer inline-flex items-center shadow-sm"
+                      >
+                        {t("특별 몰입형 페이지 보기", "View Immersive Page")}
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => setIsScheduleOpen(true)}
+                        className="px-3 py-1 text-xs border border-[var(--color-jm-gold)] text-[var(--color-jm-gold)] hover:bg-[var(--color-jm-gold)] hover:text-white rounded-full transition-all duration-300 font-medium cursor-pointer"
+                      >
+                        {t("세부일정 확인", "View Details")}
+                      </button>
+                    )}
                   </div>
                 </div>
                 

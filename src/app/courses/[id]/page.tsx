@@ -1,5 +1,6 @@
 import { courses } from "@/data/courses";
 import CourseDetailClient from "./CourseDetailClient";
+import GrandTourClient from "./GrandTourClient";
 
 export function generateStaticParams() {
   return courses.map((course) => ({
@@ -17,6 +18,10 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
         <h1 className="text-2xl font-bold">Course not found</h1>
       </div>
     );
+  }
+
+  if (course.id === "grand-tour-15d") {
+    return <GrandTourClient course={course} />;
   }
 
   return <CourseDetailClient course={course} />;

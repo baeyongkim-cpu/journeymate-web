@@ -106,51 +106,22 @@ export const destinations: Destination[] = [
     ]
   },
   {
-    id: 'seoul',
-    title: '서울',
-    titleEn: 'Seoul',
-    description: '전통과 최신 트렌드가 공존하는 대한민국의 심장.',
-    descriptionEn: 'The heart of Korea where tradition and latest trends coexist.',
+    id: 'grand-tour',
+    title: '한국일주 (14박 15일)',
+    titleEn: 'Grand Tour of Korea',
+    description: '단순한 관광을 넘어 한국의 삶과 역사, 자연을 깊이 체험하며 진정한 나를 찾는 15일간의 여정.',
+    descriptionEn: 'A 15-day journey beyond simple sightseeing to deeply experience Korean life, history, and nature, and to find your true self.',
     image: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?q=80&w=2000&auto=format&fit=crop',
-    tags: ['고궁', '트렌드'],
-    tagsEn: ['Palace', 'Trend'],
+    tags: ['의미찾기', '로컬라이프', '전국일주'],
+    tagsEn: ['Self-Discovery', 'Local Life', 'Grand Tour'],
     category: 'beyond-incheon',
-    subDestinations: []
-  },
-  {
-    id: 'dmz',
-    title: 'DMZ (비무장지대)',
-    titleEn: 'DMZ',
-    description: '분단의 역사와 평화의 소중함을 느낄 수 있는 특별한 공간.',
-    descriptionEn: 'A special space to feel the history of division and value of peace.',
-    image: 'https://images.unsplash.com/photo-1580137189272-c9379f8864fd?q=80&w=2000&auto=format&fit=crop',
-    tags: ['역사', '평화'],
-    tagsEn: ['History', 'Peace'],
-    category: 'beyond-incheon',
-    subDestinations: []
-  },
-  {
-    id: 'suwon',
-    title: '수원',
-    titleEn: 'Suwon',
-    description: '유네스코 세계문화유산 수원화성의 장엄한 아름다움.',
-    descriptionEn: 'The majestic beauty of UNESCO World Heritage Suwon Hwaseong.',
-    image: 'https://images.unsplash.com/photo-1553159925-02b2e24f471d?q=80&w=2000&auto=format&fit=crop',
-    tags: ['유네스코', '전통'],
-    tagsEn: ['UNESCO', 'Heritage'],
-    category: 'beyond-incheon',
-    subDestinations: []
-  },
-  {
-    id: 'jeju',
-    title: '제주도',
-    titleEn: 'Jeju',
-    description: '신비로운 화산 지형과 맑은 바다가 반기는 천혜의 자연.',
-    descriptionEn: 'Blessed nature welcomed by mysterious volcanic terrain and clear seas.',
-    image: 'https://images.unsplash.com/photo-1546874177-9e664107314e?q=80&w=2000&auto=format&fit=crop',
-    tags: ['자연', '화산'],
-    tagsEn: ['Nature', 'Volcanic'],
-    category: 'beyond-incheon',
-    subDestinations: []
+    subDestinations: [
+      { name: '인천·서울', nameEn: 'Incheon & Seoul', desc: '과거와 미래의 교차점', descEn: 'Intersection of past and future', price: 'Price on Request' },
+      { name: '단양·속초·동해안', nameEn: 'East Coast', desc: '자연 속 명상과 치유', descEn: 'Meditation and healing in nature', price: 'Price on Request' },
+      { name: '경주·울산·부산', nameEn: 'Gyeongsang', desc: '천년의 역사와 해양 문화', descEn: 'Millennium history and maritime culture', price: 'Price on Request' },
+      { name: '여수·순천·진도', nameEn: 'Jeolla South', desc: '남도 낭만과 생태', descEn: 'Southern romance and ecology', price: 'Price on Request' },
+      { name: '제주도', nameEn: 'Jeju', desc: '해녀 문화와 화산섬 힐링', descEn: 'Haenyeo culture and volcanic island healing', price: 'Price on Request' },
+      { name: '광주·전주·대전', nameEn: 'Jeolla North & Chungcheong', desc: '예술, 선비정신, 과학', descEn: 'Art, scholar spirit, and science', price: 'Price on Request' }
+    ]
   }
 ];
