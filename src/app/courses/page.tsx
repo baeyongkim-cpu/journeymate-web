@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/lib/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { courses, CourseType } from "@/data/courses";
@@ -36,6 +36,33 @@ export default function CoursesPage() {
   ];
 
   const filteredCourses = activeFilter === 'all' ? courses : courses.filter(c => c.type === activeFilter);
+  // Create 10 identical sets for infinite loop illusion
+  const extendedCourses = Array(10).fill(filteredCourses).flat();
+
+  useEffect(() => {
+    // On mount or filter change, jump to the exact middle of the 10 sets
+    if (sliderRef.current) {
+      setTimeout(() => {
+        if (sliderRef.current) {
+          sliderRef.current.scrollLeft = sliderRef.current.scrollWidth / 2;
+        }
+      }, 50);
+    }
+  }, [activeFilter]);
+
+  const handleScroll = () => {
+    if (!sliderRef.current) return;
+    const { scrollLeft, scrollWidth } = sliderRef.current;
+    
+    // If we scroll into the first 1/4 of the total width, jump forward 5 sets
+    if (scrollLeft < scrollWidth / 4) {
+      sliderRef.current.scrollLeft += scrollWidth / 2;
+    } 
+    // If we scroll into the last 1/4 of the total width, jump backward 5 sets
+    else if (scrollLeft > (scrollWidth * 3) / 4) {
+      sliderRef.current.scrollLeft -= scrollWidth / 2;
+    }
+  };
 
   const typeLabel = (type: CourseType) => {
     if (type === 'day-trip') return isEn ? 'Day Trip' : '당일';
@@ -116,14 +143,15 @@ export default function CoursesPage() {
 
           <div 
             ref={sliderRef}
+            onScroll={handleScroll}
             className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 px-4 max-w-5xl mx-auto justify-start"
           >
-            {filteredCourses.map((course, index) => {
+            {extendedCourses.map((course, index) => {
             const isSelected = selectedCourse.id === course.id;
             
             return (
               <div 
-                key={course.id}
+                key={`${course.id}-${index}`}
                 onClick={() => setSelectedCourse(course)}
                 role="button"
                 tabIndex={0}
