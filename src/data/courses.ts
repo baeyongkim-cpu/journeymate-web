@@ -283,7 +283,7 @@ export const courses: Course[] = [
           { time: "13:00 - 14:30", activityKo: "[미식] 로컬 어부/해녀가 당일 조업한 싱싱한 활어회 & 장어 구이 다이닝", activityEn: "[Dining] Fresh raw fish & grilled eel dining caught that day by local fishermen/Haenyeo" },
           { time: "14:30 - 17:30", activityKo: "[힐링/트레킹] 무의도 환상길(해안 데크길) 힐링 트레킹 & 오션뷰 카페 차담", activityEn: "[Wellness] Muuido Fantasy Road (coastal deck walk) healing trek & ocean-view café tea chat" },
           { time: "17:30 - 20:00", activityKo: "[미식] 섬 전통 선상 낚시 체험 또는 프라이빗 해산물 찜 다이닝", activityEn: "[Dining] Island traditional boat fishing experience or private seafood steam dining" },
-          { time: "20:00 - 22:00", activityKo: "[힐링] 풀빌라 프라이빗 온수풀 수영 & 밤하늘 은하수 관측", activityEn: "[Wellness] Private heated pool swim at pool villa & starry night sky observation" }
+          { time: "20:00 - 22:00", activityKo: "[힐링] 풀빌라 프라이빗 온수풀 수영 & 밤바다 파도 소리와 함께하는 야간 스파 힐링", activityEn: "[Wellness] Private heated pool swim & night spa healing with the soothing sound of ocean waves" }
         ]
       },
       {
