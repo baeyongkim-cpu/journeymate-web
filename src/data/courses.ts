@@ -46,7 +46,7 @@ export const courses: Course[] = [
     titleEn: "Open Port Time Slip",
     subtitleKo: "130년 근대 역사와 원조 짜장면, 레트로 골목을 하루에 담다",
     subtitleEn: "130 years of modern history, original jjajangmyeon, and retro alleys — all in one day",
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=2000&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1520680196853-272cb250c6fb?q=80&w=2000&auto=format&fit=crop",
     meaningKo: [
       { title: "한국 유일의 차이나타운", desc: "붉은 패루와 황금 장식이 가득한 한국 유일의 공식 차이나타운에서 짜장면의 발원지를 직접 체험하며, 동서양이 교차했던 개항기의 특별한 역사를 만납니다." },
       { title: "근대 건축의 살아있는 박물관", desc: "일제 강점기와 개항 시대의 서양식 건축물이 그대로 남아있는 개항장 거리를 걸으며 시간이 멈춘 듯한 레트로 스냅 사진 투어를 즐깁니다." },
@@ -126,7 +126,7 @@ export const courses: Course[] = [
     titleEn: "Yeongjong Sea & Muuido Nature",
     subtitleKo: "레일바이크, 해안 트레킹, 서해 일몰 — 공항 옆 섬에서 보내는 하루",
     subtitleEn: "Rail biking, coastal trekking, West Sea sunset — a full day on the island next to the airport",
-    image: "https://images.unsplash.com/photo-1498144846853-60ca2d438496?q=80&w=2000&auto=format&fit=crop",
+    image: "/images/incheon/muuido.jpg",
     meaningKo: [
       { title: "공항 바로 옆 바다", desc: "인천국제공항에서 차로 10분 거리, 영종도 씨사이드 레일바이크로 시원한 바다 바람을 맞으며 서해 절경을 감상합니다. 귀국 전날 일정으로도 완벽한 코스입니다." },
       { title: "무의도 해상탐방로", desc: "바다 위에 세워진 1.4km 데크길을 걸으며 청정 서해를 발밑으로 내려다보는 독특한 경험. 소무의도 원시 해안 트레킹까지 더해 진정한 자연 속 힐링을 완성합니다." },
@@ -167,7 +167,7 @@ export const courses: Course[] = [
     titleEn: "Ganghwa Island Heritage Journey",
     subtitleKo: "UNESCO 세계유산부터 천년 사찰, 레트로 카페까지 — 한국의 깊은 역사를 하룻밤 사이에",
     subtitleEn: "UNESCO heritage, thousand-year temples, and retro cafés — Korea's deep history in one night",
-    image: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=2000&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1515255474375-9c9085ec617d?q=80&w=2000&auto=format&fit=crop",
     meaningKo: [
       { title: "UNESCO 고인돌과 선사 문명", desc: "강화도에 밀집된 UNESCO 세계문화유산 고인돌 군락지는 3,000년 전 선사시대 거석 문화의 흔적입니다. 전세계 고인돌의 40%가 한국에 있으며, 그 중심이 바로 강화도입니다." },
       { title: "한국 최고(最古) 사찰 전등사", desc: "서기 381년에 창건된 한국에서 가장 오래된 사찰, 전등사. 천년의 역사를 품은 삼랑성 성곽을 걸으며 시간을 초월한 고요함을 경험합니다." },
@@ -269,7 +269,7 @@ export const courses: Course[] = [
     titleEn: "Muuido Nature Healing & Island Campfire",
     subtitleKo: "해상탐방로, 선상 낚시, 갯벌 체험 — 도시를 벗어나 섬에서 보내는 진짜 힐링",
     subtitleEn: "Marine trail, boat fishing, tidal flat — genuine island healing away from the city",
-    image: "/images/incheon/muuido.jpg",
+    image: "https://images.unsplash.com/photo-1504109586057-7a2ae83d1338?q=80&w=2000&auto=format&fit=crop",
     meaningKo: [
       { title: "바다 위 해상탐방로", desc: "하나개 해수욕장 앞 바다 위에 세워진 1.4km 데크길은 무의도의 상징입니다. 발밑으로 청정 서해 바다가 보이고, 탁 트인 수평선이 펼쳐지는 이 길 위에서 오직 자연과 나만 존재합니다." },
       { title: "선상 낚시 & 직화 구이", desc: "로컬 어부와 함께하는 선상 낚시 체험에서 직접 잡은 물고기를 선상에서 즉석으로 구워 먹는 경험은 어느 미슐랭 레스토랑도 줄 수 없는 특별한 미식입니다." },
