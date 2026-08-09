@@ -61,7 +61,7 @@ export const courses: Course[] = [
       duration: { ko: "당일 (5~7시간)", en: "Day Trip (5–7 hours)" },
       accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
       timing: { ko: "연중 가능 · 봄/가을 추천", en: "Year-round · Spring/Fall recommended" },
-      price: { ko: "1인 510,000원", en: "KRW 510,000 per person (approx. $390)" },
+      price: { ko: "1팀(2~4인) 820,000원", en: "KRW 820,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -101,7 +101,7 @@ export const courses: Course[] = [
       duration: { ko: "당일 (5~8시간)", en: "Day Trip (5–8 hours)" },
       accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
       timing: { ko: "연중 가능 · 야경 포함 시 일몰 후 권장", en: "Year-round · Arrive before sunset for night view" },
-      price: { ko: "1인 550,000원", en: "KRW 550,000 per person (approx. $420)" },
+      price: { ko: "1팀(2~4인) 940,000원", en: "KRW 940,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -141,7 +141,7 @@ export const courses: Course[] = [
       duration: { ko: "당일 (7~9시간)", en: "Day Trip (7–9 hours)" },
       accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
       timing: { ko: "연중 가능 · 여름 해수욕·일몰 감상 최적", en: "Year-round · Summer swimming & sunset viewing are highlights" },
-      price: { ko: "1인 580,000원", en: "KRW 580,000 per person (approx. $440)" },
+      price: { ko: "1팀(2~4인) 1,020,000원", en: "KRW 1,020,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -182,7 +182,7 @@ export const courses: Course[] = [
       duration: { ko: "1박 2일", en: "1 Night / 2 Days" },
       accommodation: { ko: "강화 한옥 게스트하우스 또는 프리미엄 펜션", en: "Ganghwa Hanok guesthouse or premium pension" },
       timing: { ko: "연중 가능 · 봄(벚꽃)·가을(단풍) 특히 추천", en: "Year-round · Spring (cherry blossom) & Fall (foliage) highly recommended" },
-      price: { ko: "1인 860,000원", en: "KRW 860,000 per person (approx. $660)" },
+      price: { ko: "1팀(2~4인) 2,120,000원", en: "KRW 2,120,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -234,7 +234,7 @@ export const courses: Course[] = [
       duration: { ko: "1박 2일", en: "1 Night / 2 Days" },
       accommodation: { ko: "파라다이스시티 호텔 (공항 5분, 5성급 복합리조트)", en: "Paradise City Hotel (5 min from airport, 5-star resort complex)" },
       timing: { ko: "연중 가능 · 겨울 스파 힐링 특히 추천", en: "Year-round · Winter spa retreat especially recommended" },
-      price: { ko: "1인 1,100,000원", en: "KRW 1,100,000 per person (approx. $840)" },
+      price: { ko: "1팀(2~4인) 3,140,000원", en: "KRW 3,140,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -284,7 +284,7 @@ export const courses: Course[] = [
       duration: { ko: "1박 2일", en: "1 Night / 2 Days" },
       accommodation: { ko: "무의도 풀빌라 또는 글램핑 펜션", en: "Muuido pool villa or glamping pension" },
       timing: { ko: "연중 가능 · 여름 갯벌·해수욕 최적", en: "Year-round · Summer for tidal flat & swimming" },
-      price: { ko: "1인 840,000원", en: "KRW 840,000 per person (approx. $640)" },
+      price: { ko: "1팀(2~4인) 2,060,000원", en: "KRW 2,060,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -336,7 +336,7 @@ export const courses: Course[] = [
       duration: { ko: "2박 3일", en: "2 Nights / 3 Days" },
       accommodation: { ko: "영종도 오션뷰 프리미엄 풀빌라 1박 + 강화 한옥 1박", en: "1 night at Yeongjongdo ocean-view premium pool villa + 1 night at Ganghwa Hanok" },
       timing: { ko: "3월~11월 추천 (날씨 최적)", en: "March–November recommended (best weather)" },
-      price: { ko: "6,400,000원 (2인 기준)", en: "KRW 6,400,000 (for 2 persons)" },
+      price: { ko: "1팀(2~4인 기준) 6,400,000원", en: "KRW 6,400,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -400,7 +400,7 @@ export const courses: Course[] = [
       duration: { ko: "3박 4일", en: "3 Nights / 4 Days" },
       accommodation: { ko: "강화 사찰 템플스테이 1박 + 강화 한옥 1박 + 무의도 풀빌라 1박", en: "1 night temple stay in Ganghwa + 1 night Ganghwa Hanok + 1 night Muuido pool villa" },
       timing: { ko: "연중 가능 · 봄(벚꽃)·가을(단풍) 시즌 최강 추천", en: "Year-round · Spring cherry blossoms & Fall foliage are the highlights" },
-      price: { ko: "8,200,000원 (2인 기준)", en: "KRW 8,200,000 (for 2 persons)" },
+      price: { ko: "1팀(2~4인 기준) 8,200,000원", en: "KRW 8,200,000 per team (2-4 pax)" },
     },
     schedule: [
       {
@@ -478,7 +478,7 @@ export const courses: Course[] = [
       duration: { ko: "2박 3일", en: "2 Nights / 3 Days" },
       accommodation: { ko: "무의도 프라이빗 풀빌라 2박", en: "2 nights at Muuido private pool villa" },
       timing: { ko: "5월~10월 추천 (섬 여행 최적 시즌)", en: "May–October recommended (best season for island travel)" },
-      price: { ko: "7,200,000원 (2인 기준)", en: "KRW 7,200,000 (for 2 persons)" },
+      price: { ko: "1팀(2~4인 기준) 7,200,000원", en: "KRW 7,200,000 per team (2-4 pax)" },
     },
     schedule: [
       {
