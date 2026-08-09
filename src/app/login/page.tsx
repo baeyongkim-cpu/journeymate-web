@@ -40,7 +40,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
+    <div className="min-h-screen pt-28 pb-12 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <h1 className="text-2xl font-bold text-center mb-8">
           {isSignUp ? t("회원가입", "Sign Up") : t("로그인", "Login")}

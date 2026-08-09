@@ -1,147 +1,211 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, ChevronDown, ChevronUp } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-import { useLanguage } from "@/lib/LanguageContext";
-
-import { destinations as fallbackDestinations, Destination } from "@/data/destinations";
-import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, ChevronDown, MessageCircle } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { destinations, parentTrack, kidsTrack } from '@/data/destinations';
 
 export default function DestinationsPage() {
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'incheon-core' | 'beyond-incheon'>('incheon-core');
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [destinations, setDestinations] = useState<Destination[]>(fallbackDestinations);
-  const { t, lang } = useLanguage();
 
-  useEffect(() => {
-    const fetchDests = async () => {
-      try {
-        const snap = await getDocs(collection(db, "journeymate_destinations"));
-        if (!snap.empty) {
-          const dests = snap.docs.map(doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              ...data,
-              tags: data.tags || [],
-              tagsEn: data.tagsEn || [],
-              subDestinations: data.subDestinations || []
-            } as Destination;
-          });
-          setDestinations(dests);
-        }
-      } catch (e) {
-        console.error("Failed to fetch destinations from DB, using fallback", e);
-      }
-    };
-    fetchDests();
-  }, []);
+  const filteredDestinations = destinations.filter(d => d.category === activeTab);
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
+  const handleWhatsApp = (subName: string) => {
+    const msg = encodeURIComponent(`Hello! I'm interested in the "${subName}" experience.`);
+    window.open(`https://wa.me/821099008210?text=${msg}`, '_blank');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50/50 py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-16 space-y-4">
-          <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900"
-          >
-            {t("당신이 꿈꾸는", "Scenes of Korea")} <span className="text-blue-600">{t("한국의 장면들", "You Dream Of")}</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
-          >
-            {t("어디서 어떤 분위기로 촬영하고 싶으신가요? 지역을 선택하여 숨겨진 스팟들을 확인해보세요.", "Where and in what mood would you like to shoot? Select a region to check out hidden spots.")}
-          </motion.p>
+    <div className="min-h-screen bg-[var(--color-jm-cream)] text-[var(--color-jm-text)] pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-4">
+            {t('목적지', 'Destinations')}
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            {t('우리는 일정을 팔지 않습니다. 평생 기억에 남을 순간을 디자인합니다.', 'We don\'t sell itineraries. We craft moments that linger in your heart forever.')}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {destinations.map((dest, index) => (
-            <motion.div 
-              key={dest.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 + 0.2 }}
-              className={`group overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-300 border-2 ${expandedId === dest.id ? 'border-blue-600' : 'border-transparent hover:shadow-xl'}`}
+        {/* Tabs */}
+        <div className="flex justify-center mb-12">
+          <div className="inline-flex border-b border-[var(--color-jm-border)]">
+            <button
+              onClick={() => setActiveTab('incheon-core')}
+              className={`px-8 py-4 text-lg font-medium transition-colors relative ${
+                activeTab === 'incheon-core' ? 'text-[var(--color-jm-navy)]' : 'text-gray-500 hover:text-[var(--color-jm-navy)]'
+              }`}
             >
-              {/* Image & Main Info (Clickable) */}
-              <div 
-                className="relative h-[250px] md:h-[300px] w-full overflow-hidden cursor-pointer"
-                onClick={() => toggleExpand(dest.id)}
-              >
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500 z-10" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={dest.image} 
-                  alt={lang === 'en' ? dest.titleEn : dest.title}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+              ⚓ {t('인천 코어', 'Incheon Core')}
+              {activeTab === 'incheon-core' && (
+                <motion.div
+                  layoutId="tab-indicator"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-jm-gold)]"
                 />
-                
-                <div className="absolute top-6 left-6 z-20 flex gap-2">
-                  {(lang === 'en' && dest.tagsEn ? dest.tagsEn : dest.tags).map(tag => (
-                    <span key={tag} className="px-3 py-1 bg-white/90 backdrop-blur-sm text-sm font-semibold text-gray-800 rounded-full shadow-sm">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('beyond-incheon')}
+              className={`px-8 py-4 text-lg font-medium transition-colors relative ${
+                activeTab === 'beyond-incheon' ? 'text-[var(--color-jm-navy)]' : 'text-gray-500 hover:text-[var(--color-jm-navy)]'
+              }`}
+            >
+              🇰🇷 {t('비욘드 인천', 'Beyond Incheon')}
+              {activeTab === 'beyond-incheon' && (
+                <motion.div
+                  layoutId="tab-indicator"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-jm-gold)]"
+                />
+              )}
+            </button>
+          </div>
+        </div>
 
-                <div className="absolute bottom-6 left-6 z-20 text-white right-6 flex justify-between items-end">
-                   <div>
-                      <h3 className="text-3xl font-bold mb-2 flex items-center gap-2 drop-shadow-lg">
-                        <MapPin className="w-6 h-6 text-blue-400" /> {lang === 'en' ? dest.titleEn : dest.title}
-                      </h3>
-                      <p className="text-gray-100 line-clamp-1 drop-shadow-md">
-                        {lang === 'en' ? dest.descriptionEn : dest.description}
-                      </p>
-                   </div>
-                   <div className="bg-white/20 p-2 rounded-full backdrop-blur-md">
-                      {expandedId === dest.id ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
-                   </div>
-                </div>
-              </div>
-
-              {/* Expandable Sub-Destinations Area */}
-              <AnimatePresence>
-                {expandedId === dest.id && (
-                  <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="bg-white overflow-hidden"
-                  >
-                    <div className="p-6 md:p-8 space-y-4 bg-gray-50/50">
-                      <h4 className="font-bold text-gray-900 mb-4 border-b pb-2">{t("상세 촬영 스팟 및 코스", "Detailed Photo Spots and Courses")}</h4>
-                      
-                      {dest.subDestinations.map((sub, i) => (
-                        <div key={i} className="flex justify-between items-center p-4 bg-white rounded-xl border border-gray-100 hover:border-blue-200 transition-colors shadow-sm">
-                          <div>
-                            <div className="font-bold text-lg text-gray-900">{lang === 'en' ? sub.nameEn : sub.name}</div>
-                            <div className="text-sm text-gray-500">{lang === 'en' ? sub.descEn : sub.desc}</div>
-                          </div>
-                          <div className="flex flex-col items-end gap-2 justify-center">
-                            <Link href={`/builder?dest=${dest.id}&sub=${i}`} className="inline-flex items-center justify-center font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-full px-4 text-sm w-full border-blue-200 text-blue-700 hover:bg-blue-50">
-                                {t("여정 설계하기", "Design Trip")}
-                            </Link>
-                          </div>
-                        </div>
+        {/* Destinations Grid */}
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24 items-start"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredDestinations.map((dest) => (
+              <motion.div
+                key={dest.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+                className="bg-white rounded-2xl overflow-hidden border border-[var(--color-jm-border)] shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="relative h-64 sm:h-80 cursor-pointer" onClick={() => toggleExpand(dest.id)}>
+                  <img
+                    src={dest.image}
+                    alt={t(dest.title, dest.titleEn)}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {(t(dest.tags, dest.tagsEn) as string[]).map((tag, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-black/40 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/30">
+                          {tag}
+                        </span>
                       ))}
                     </div>
-                  </motion.div>
+                    <h3 className="text-2xl font-bold tracking-tight text-white mb-2">{t(dest.title, dest.titleEn)}</h3>
+                    <p className="text-sm text-white/95 font-medium line-clamp-2">{t(dest.description, dest.descriptionEn)}</p>
+                  </div>
+                </div>
+
+                <AnimatePresence>
+                  {expandedId === dest.id && dest.subDestinations.length > 0 && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden bg-[var(--color-jm-cream-dark)]"
+                    >
+                      <div className="p-6 space-y-6">
+                        {dest.subDestinations.map((sub, idx) => (
+                          <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-jm-border)] pb-6 last:border-0 last:pb-0">
+                            <div>
+                              <h4 className="text-lg font-bold text-[var(--color-jm-navy)] mb-1">
+                                {t(sub.name, sub.nameEn)}
+                              </h4>
+                              <p className="text-sm text-gray-800 font-medium mb-2">
+                                {t(sub.desc, sub.descEn)}
+                              </p>
+                              <p className="text-sm font-bold text-[var(--color-jm-gold)]">
+                                {sub.price}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleWhatsApp(t(sub.name, sub.nameEn))}
+                              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--color-jm-navy)] text-white text-sm font-bold rounded-lg hover:bg-opacity-90 transition-colors shrink-0"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                              {t('호스트와 상담하기', 'Talk to Your Host')}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
+                {dest.subDestinations.length > 0 && (
+                  <button
+                    onClick={() => toggleExpand(dest.id)}
+                    className="w-full py-3 bg-white text-[var(--color-jm-navy)] font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors border-t border-[var(--color-jm-border)]"
+                  >
+                    {expandedId === dest.id ? t('접기', 'Show Less') : t('경험 보기', 'View Experiences')}
+                    <ChevronDown className={`w-4 h-4 transition-transform ${expandedId === dest.id ? 'rotate-180' : ''}`} />
+                  </button>
                 )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Dual-Track Section */}
+        <div className="mt-32 pt-16 border-t border-[var(--color-jm-border)]">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-4">
+              {t('듀얼 트랙 가족 여행', 'Dual-Track Family Experiences')}
+            </h2>
+            <p className="text-gray-800 font-medium max-w-2xl mx-auto">
+              {t('부모님에게는 온전한 휴식을, 아이들에게는 즐거운 발견을 선사합니다.', 'Pure serenity for parents, joyful discoveries for children.')}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Parents Track */}
+            <div className="bg-white p-8 rounded-2xl border border-[var(--color-jm-border)] shadow-sm">
+              <h3 className="text-2xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-8 flex items-center gap-3">
+                <span className="text-2xl">✨</span>
+                {t('부모님을 위한 휴식', 'Pure Serenity for Parents')}
+              </h3>
+              <div className="space-y-6">
+                {parentTrack.map((item) => (
+                  <div key={item.id} className="flex gap-4">
+                    <div className="text-3xl shrink-0">{item.icon}</div>
+                    <div>
+                      <h4 className="font-bold text-[var(--color-jm-navy)] text-lg mb-1">{t(item.titleKo, item.titleEn)}</h4>
+                      <p className="text-gray-800 text-sm leading-relaxed font-medium">{t(item.descKo, item.descEn)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Kids Track */}
+            <div className="bg-white p-8 rounded-2xl border border-[var(--color-jm-border)] shadow-sm">
+              <h3 className="text-2xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-8 flex items-center gap-3">
+                <span className="text-2xl">🎈</span>
+                {t('아이들을 위한 발견', 'Joyful Discoveries for Children')}
+              </h3>
+              <div className="space-y-6">
+                {kidsTrack.map((item) => (
+                  <div key={item.id} className="flex gap-4">
+                    <div className="text-3xl shrink-0">{item.icon}</div>
+                    <div>
+                      <h4 className="font-bold text-[var(--color-jm-navy)] text-lg mb-1">{t(item.titleKo, item.titleEn)}</h4>
+                      <p className="text-gray-800 text-sm leading-relaxed font-medium">{t(item.descKo, item.descEn)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

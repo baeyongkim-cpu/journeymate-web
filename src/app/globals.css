@@ -1,19 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@theme {
+  --color-jm-navy: #0F2C59;
+  --color-jm-cream: #FDFBF7;
+  --color-jm-gold: #8C6D46;
+  --color-jm-text: #1E293B;
+  --color-jm-border: #E8E2DB;
+  --color-jm-cream-dark: #F5F0E8;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-serif-en: "Playfair Display", serif;
+  --font-serif-kr: "Noto Serif KR", serif;
+  --font-sans: "Pretendard", sans-serif;
 }
 
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-jm-cream);
+  color: var(--color-jm-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: inherit;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.font-serif-en {
+  font-family: var(--font-serif-en);
+}
+
+.font-serif-kr {
+  font-family: var(--font-serif-kr);
+}
+
+/* Base utility classes for luxury look */
+.luxury-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-jm-border);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.luxury-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+  background-color: var(--color-jm-cream-dark);
+}
+
+.luxury-button {
+  background-color: var(--color-jm-navy);
+  color: #ffffff;
+  padding: 0.75rem 2rem;
+  border-radius: 0;
+  letter-spacing: 0.025em;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.luxury-button:hover {
+  background-color: var(--color-jm-gold);
 }

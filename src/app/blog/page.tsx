@@ -17,12 +17,16 @@ export default function BlogPage() {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const q = query(collection(db, "journeymate_posts"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
       const posts: any[] = [];
-      snapshot.forEach(doc => {
-        posts.push({ id: doc.id, ...doc.data() });
-      });
+      try {
+        const q = query(collection(db, "journeymate_posts"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        snapshot.forEach(doc => {
+          posts.push({ id: doc.id, ...doc.data() });
+        });
+      } catch (e) {
+        console.error("Failed to fetch posts:", e);
+      }
       
       // 기존에 있던 '인천 프라이빗 스냅' 글을 항상 마지막(가장 오래된 글)에 추가하여 복구
       posts.push({
@@ -48,16 +52,19 @@ export default function BlogPage() {
   const gridArticles = articles.length > 0 ? articles.slice(1) : [];
 
   return (
-    <div className="min-h-screen bg-white py-16">
+    <div className="min-h-screen bg-[var(--color-jm-cream)] pt-28 pb-20">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
-              JourneyMate <span className="text-blue-600">Magazine</span>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 break-keep text-gray-900">
+              {t("JourneyMate 매거진", "JourneyMate Magazine")}
             </h1>
-            <p className="text-lg text-gray-500 max-w-xl">
-              {t("한국 여행을 더 특별하게 만드는 로컬 팁, 촬영 가이드, 그리고 생생한 리뷰를 확인하세요.", "Check out local tips, photography guides, and reviews to make your Korea trip special.")}
+            <p className="text-lg md:text-xl text-gray-500 max-w-3xl font-light leading-relaxed break-keep">
+              {t(
+                "한국 여행을 더 특별하게 만드는 로컬 팁, 촬영 가이드, 그리고 생생한 리뷰를 확인하세요.",
+                "Discover local tips, photography guides, and vivid reviews to make your Korea trip extraordinary."
+              )}
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -81,19 +88,19 @@ export default function BlogPage() {
               className="mb-16 group cursor-pointer block"
             >
               <div className="relative h-[400px] md:h-[500px] rounded-3xl overflow-hidden mb-6">
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-500 z-10" />
+                <div className="absolute inset-0 bg-black/50 group-hover:bg-black/35 transition-colors duration-500 z-10" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={featuredArticle.image || "https://images.unsplash.com/photo-1517154421773-0529f29ea451?q=80&w=2070&auto=format&fit=crop"} 
                   alt={featuredArticle.title} 
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" 
                 />
-                <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 text-white w-full md:w-2/3 bg-gradient-to-t from-black/80 to-transparent">
-                  <span className="inline-block px-3 py-1 bg-blue-600 rounded-full text-sm font-bold mb-4">{featuredArticle.category || "Hot Issue"}</span>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 text-white w-full md:w-4/5 bg-gradient-to-t from-black/95 via-black/75 to-transparent">
+                  <span className="inline-block px-4 py-1.5 bg-blue-600 text-white rounded-full text-sm font-bold mb-4 shadow-md">{featuredArticle.category || "Hot Issue"}</span>
+                  <h2 className="text-3xl md:text-4xl font-extrabold mb-4 leading-tight break-keep text-white font-sans drop-shadow-md">
                     {lang === 'en' && featuredArticle.title_en ? featuredArticle.title_en : featuredArticle.title}
                   </h2>
-                  <p className="text-gray-200 line-clamp-2">
+                  <p className="text-white/95 font-medium line-clamp-2 text-base md:text-lg drop-shadow">
                     {lang === 'en' && featuredArticle.excerpt_en ? featuredArticle.excerpt_en : (featuredArticle.excerpt || featuredArticle.content?.substring(0, 100) + '...')}
                   </p>
                 </div>
@@ -119,17 +126,22 @@ export default function BlogPage() {
                     alt={article.title} 
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" 
                   />
-                  <div className="absolute top-4 left-4">
+                  <div className="absolute top-4 left-4 flex gap-2">
                     <span className="px-3 py-1 bg-white/90 backdrop-blur text-xs font-bold text-gray-900 rounded-full">
                       {article.category || "Story"}
                     </span>
+                    {article.videoUrl && (
+                      <span className="px-3 py-1 bg-red-600 text-xs font-bold text-white rounded-full flex items-center gap-1 shadow-md">
+                        ▶ Video
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-gray-500 gap-2">
                     <Clock className="w-4 h-4" /> {new Date(article.createdAt).toLocaleDateString()}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug break-keep">
                     {lang === 'en' && article.title_en ? article.title_en : article.title}
                   </h3>
                   <p className="text-gray-600 line-clamp-2 text-sm leading-relaxed">

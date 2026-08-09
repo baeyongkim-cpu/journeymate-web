@@ -1,907 +1,704 @@
 "use client";
-import { useState, useEffect, Suspense, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Sparkles, CheckCircle2, ChevronRight, Plane, Building, Stethoscope, Camera, Video, MapPin, ChevronDown, ChevronUp, Plus, X, Car, Save, Train } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { DayPicker } from "react-day-picker";
-import { format, addDays, differenceInDays } from "date-fns";
-import "react-day-picker/dist/style.css";
-import { destinations as fallbackDestinations, Destination } from "@/data/destinations";
-import { useAuth } from "@/lib/AuthContext";
-import { useLanguage } from "@/lib/LanguageContext";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 
-const css = `
-  .rdp { --rdp-color-accent: #2563eb; }
-`;
+import { useState, useEffect, Suspense } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { DayPicker, DateRange } from 'react-day-picker';
+import { format, parse, isValid } from 'date-fns';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Calendar as CalendarIcon, Users, MessageSquare, Heart, ArrowRight, Check, Save, Edit } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { useAuth } from '@/lib/AuthContext';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import 'react-day-picker/dist/style.css';
+
+export interface SubExperience {
+  id: string;
+  categoryId: string;
+  labelKo: string;
+  labelEn: string;
+  locationKo: string;
+  locationEn: string;
+}
+
+const categoryList = [
+  { id: 'culture', labelKo: '문화 & 역사', labelEn: 'Culture & History', icon: '🏛️' },
+  { id: 'food', labelKo: '미식 & 시장', labelEn: 'Food & Traditional Markets', icon: '🍢' },
+  { id: 'nature', labelKo: '자연 & 섬 힐링', labelEn: 'Nature & Private Islands', icon: '🏝️' },
+  { id: 'city', labelKo: '시티 & 스카이라인', labelEn: 'City & Future Skyline', icon: '🏙️' },
+  { id: 'photo', labelKo: '스냅 & 4K 시네마틱 촬영', labelEn: 'Snap Photo & 4K Cinema', icon: '📸' }
+];
+
+const subExperiences: SubExperience[] = [
+  // 문화 & 역사 (개항장거점)
+  { id: 'heritage-walk', categoryId: 'culture', labelKo: '130년 헤리티지 근대 건축 워크', labelEn: '130-Year Heritage Walk', locationKo: '개항장', locationEn: 'Gaehangro' },
+  { id: 'chinatown', categoryId: 'culture', labelKo: '한국 최초 차이나타운 스토리 투어', labelEn: 'Chinatown History & Food Walk', locationKo: '차이나타운', locationEn: 'Chinatown' },
+  { id: 'fairytale', categoryId: 'culture', labelKo: '송월동 동화마을 스냅 산책', labelEn: 'Fairy Tale Village Snap Walk', locationKo: '동화마을', locationEn: 'Fairy Tale Village' },
+
+  // 미식 & 시장 (신포시장거점)
+  { id: 'sinpo-food', categoryId: 'food', labelKo: '신포국제시장 스트릿 푸드 탐방', labelEn: 'Sinpo Traditional Market Foodie Tour', locationKo: '신포시장', locationEn: 'Sinpo Market' },
+  { id: 'k-dessert', categoryId: 'food', labelKo: 'K-디저트(앙금플라워/떡) 만들기 클래스', labelEn: 'K-Dessert Making Class', locationKo: '신포시장', locationEn: 'Sinpo Market' },
+  { id: 'home-cooking', categoryId: 'food', labelKo: '신선한 로컬 재료로 즐기는 한식 쿠킹', labelEn: 'Local Korean Home Cooking Class', locationKo: '신포시장', locationEn: 'Sinpo Market' },
+
+  // 자연 & 섬 힐링 (무의도/신시모도거점)
+  { id: 'beach-bbq', categoryId: 'nature', labelKo: '프라이빗 섬 프라이빗 해변 바비큐', labelEn: 'Private Beach Barbecue', locationKo: '무의도/신시모도', locationEn: 'Private Island' },
+  { id: 'coastal-trek', categoryId: 'nature', labelKo: '해안길 데크 트레킹 & 파도 소리 명상', labelEn: 'Coastal Trail Trekking & Wave Meditation', locationKo: '무의도', locationEn: 'Muuido Island' },
+  { id: 'sunset-meditation', categoryId: 'nature', labelKo: '서해 일몰 불멍 & 파이어핏 대화', labelEn: 'Sunset View & Island Fire Pit Conversation', locationKo: '신시모도', locationEn: 'Sinsimodo Island' },
+
+  // 시티 & 스카이라인 (송도거점)
+  { id: 'park-boat', categoryId: 'city', labelKo: '송도 센트럴파크 호수 프라이빗 보팅', labelEn: 'Central Park Private Boating', locationKo: '송도국제도시', locationEn: 'Songdo City' },
+  { id: 'gtower-view', categoryId: 'city', labelKo: 'G타워 파노라마 스카이라인 전망대', labelEn: 'G-Tower Observatory Panoramic View', locationKo: '송도국제도시', locationEn: 'Songdo City' },
+  { id: 'canal-walk', categoryId: 'city', labelKo: '송도 수로 커낼워크 리조트풍 산책', labelEn: 'European Canal Walk Promenade', locationKo: '송도국제도시', locationEn: 'Songdo City' },
+
+  // 스냅 & 4K 시네마틱 촬영
+  { id: 'snap-photo', categoryId: 'photo', labelKo: '전담 호스트의 1:1 고화질 화보 스냅 촬영', labelEn: '1:1 Personal High-Res Snap Shoot', locationKo: '전 코스', locationEn: 'All Locations' },
+  { id: 'video-4k', categoryId: 'photo', labelKo: '평생 소장용 4K 시네마틱 여행 브이로그 영상', labelEn: '4K Cinematic Travel Video Archive', locationKo: '전 코스', locationEn: 'All Locations' }
+];
+
+export interface AddOnService {
+  id: string;
+  labelKo: string;
+  labelEn: string;
+  descKo: string;
+  descEn: string;
+  icon: string;
+}
+
+const addOnServicesList: AddOnService[] = [
+  { id: 'airport-pickup', labelKo: '공항 VIP 픽업 & 샌딩', labelEn: 'Airport VIP Pickup & Drop-off', descKo: '인천공항 입국 마중부터 출국 배웅까지 전용 차량 1:1 케어', descEn: 'Dedicated vehicle care from airport greeting to departure farewell', icon: '✈️' },
+  { id: 'luxury-van', labelKo: '전용 럭셔리 밴 & 전담 기사', labelEn: 'Dedicated Luxury Van & Chauffeur', descKo: '여행 전체 일정 고급 전용 차량 및 전문 기사 동행', descEn: 'High-end private luxury van and chauffeur', icon: '🚐' },
+  { id: 'stay-proxy', labelKo: '5성급 숙소 / 섬 리조트 예약 대행', labelEn: '5-Star Luxury Stay & Resort Booking', descKo: '송도 5성급 호텔 및 무의도/신시모도 프라이빗 럭셔리 리조트', descEn: 'Songdo 5-star hotel & private island luxury resort reservation', icon: '🏨' },
+  { id: 'k-beauty', labelKo: 'K-뷰티 & 메디컬 웰니스 클리닉', labelEn: 'K-Beauty & Medical Wellness Referral', descKo: 'VIP 전용 피부과, 스파, 한방 케어 및 웰니스 클리닉 연계', descEn: 'VIP dermatology, spa, oriental medicine & wellness clinic connection', icon: '💆' },
+  { id: 'transit-guide', labelKo: '대중교통 안내 & 동행 케어', labelEn: 'Public Transit Escort & Guidance', descKo: '지하철, 버스 등 한국 대중교통 이용 안내 및 1:1 현장 동행 이동 서비스', descEn: 'Subway & bus navigation guidance and 1:1 escort service', icon: '🚌' }
+];
 
 function BuilderContent() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const tripId = searchParams.get('tripId');
+  const [editingTripId, setEditingTripId] = useState<string | null>(null);
+
   const [step, setStep] = useState(1);
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  
-  const [destinations, setDestinations] = useState<Destination[]>(fallbackDestinations);
+  const isEn = lang === 'en';
+  const [savingTrip, setSavingTrip] = useState(false);
 
+  // Step 1: Details
+  const [date, setDate] = useState<DateRange | undefined>();
+  const [guests, setGuests] = useState<number>(2);
+  const [prefLang, setPrefLang] = useState<'english' | 'korean' | 'japanese'>('english');
+  
+  // Step 2: Selected Category & Sub-experiences & Add-ons
+  const [selectedCategory, setSelectedCategory] = useState<string>('culture');
+  const [selectedSubExps, setSelectedSubExps] = useState<string[]>([
+    'heritage-walk', 'sinpo-food', 'park-boat'
+  ]);
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([
+    'airport-pickup', 'luxury-van'
+  ]);
+
+  // Step 3: Notes
+  const [notes, setNotes] = useState('');
+
+  // Load existing trip if tripId param exists
   useEffect(() => {
-    const fetchDests = async () => {
+    if (!tripId || authLoading) return;
+    if (!user) return;
+    const loadTrip = async () => {
       try {
-        const snap = await getDocs(collection(db, "journeymate_destinations"));
-        if (!snap.empty) {
-          const dests = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Destination));
-          setDestinations(dests);
-        }
-      } catch (e) {
-        console.error("Failed to fetch destinations from DB", e);
-      }
-    };
-    fetchDests();
-  }, []);
-  
-  const { user } = useAuth();
-  const [isSavingTrip, setIsSavingTrip] = useState(false);
-  
-  type SelectedCourse = { destId: string; subIndex: number };
-  const [selectedCourses, setSelectedCourses] = useState<SelectedCourse[]>([]);
-  
-  // Custom courses added by the user
-  const [customCourses, setCustomCourses] = useState<{ id: string; name: string; desc: string }[]>([]);
-  const [customInputName, setCustomInputName] = useState("");
-  const [customInputDesc, setCustomInputDesc] = useState("");
-  
-  const [mediaType, setMediaType] = useState<"photo" | "video">("photo");
-  
-  // Advanced Add-on States
-  const [pickup, setPickup] = useState({ selected: false, type: 'oneway' });
-  const [rental, setRental] = useState({ selected: false, type: 'car_only', days: 1, distanceUnits: 1 });
-  const [stay, setStay] = useState({ selected: false, type: 'airbnb', useTotalTripDates: true, customDays: 1 });
-  const [medical, setMedical] = useState({ selected: false, field: "" });
-  const [transit, setTransit] = useState({ selected: false, departure: "", destination: "", accompany: false });
-  
-  const [dateRange, setDateRange] = useState<{from: Date | undefined, to: Date | undefined}>({ from: undefined, to: undefined });
-  
-  // Calculate total trip days
-  const totalTripDays = useMemo(() => {
-    if (!dateRange.from || !dateRange.to) return 1;
-    const diff = differenceInDays(dateRange.to, dateRange.from) + 1;
-    return diff > 0 ? diff : 1;
-  }, [dateRange]);
+        const docRef = doc(db, "journeymate_trips", tripId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setEditingTripId(tripId);
+          if (data.guests) setGuests(data.guests);
+          if (data.language) setPrefLang(data.language);
+          if (data.selectedSubExps) setSelectedSubExps(data.selectedSubExps);
+          if (data.selectedAddOns) setSelectedAddOns(data.selectedAddOns);
+          if (data.notes) setNotes(data.notes);
 
-  useEffect(() => {
-    if (stay.useTotalTripDates) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setStay(prev => ({ ...prev, customDays: totalTripDays }));
-    }
-  }, [totalTripDays, stay.useTotalTripDates]);
-
-  // For Accordion UI
-  const [expandedCity, setExpandedCity] = useState<string | null>("incheon");
-
-  // Initialize from URL params
-  useEffect(() => {
-    const dest = searchParams.get("dest");
-    const sub = searchParams.get("sub");
-    if (dest && sub !== null) {
-      const subIdx = parseInt(sub, 10);
-      if (!isNaN(subIdx)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSelectedCourses([{ destId: dest, subIndex: subIdx }]);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setExpandedCity(dest);
-      }
-    }
-
-    const tripId = searchParams.get("tripId");
-    if (tripId && user) {
-      const fetchTrip = async () => {
-        try {
-          const docRef = doc(db, "journeymate_trips", tripId);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            if (data.userId !== user.uid) return;
-            
-            if (data.rawCourses) setSelectedCourses(data.rawCourses);
-            if (data.customCourses) setCustomCourses(data.customCourses);
-            if (data.addons) {
-              if (data.addons.pickup) setPickup(data.addons.pickup);
-              if (data.addons.rental) setRental(data.addons.rental);
-              if (data.addons.stay) setStay(data.addons.stay);
-              if (data.addons.medical) setMedical(data.addons.medical);
-              if (data.addons.transit) setTransit(data.addons.transit);
+          // 1순위: ISO 날짜 필드 복원 (최신 저장 형식)
+          if (data.dateFrom && data.dateTo) {
+            const from = new Date(data.dateFrom);
+            const to = new Date(data.dateTo);
+            if (isValid(from) && isValid(to)) {
+              setDate({ from, to });
             }
-            if (data.dateRange) {
-              setDateRange({
-                from: data.dateRange.from ? new Date(data.dateRange.from) : undefined,
-                to: data.dateRange.to ? new Date(data.dateRange.to) : undefined
-              });
+          // 2순위: dates 문자열 파싱 (기존 저장 형식 폴백)
+          } else if (data.dates && data.dates !== 'Not specified') {
+            const parts = data.dates.split(' - ');
+            if (parts.length === 2) {
+              const from = parse(parts[0].trim(), 'MMM d, yyyy', new Date());
+              const to = parse(parts[1].trim(), 'MMM d, yyyy', new Date());
+              if (isValid(from) && isValid(to)) {
+                setDate({ from, to });
+              }
             }
           }
-        } catch (error) {
-          console.error("Error fetching trip:", error);
         }
-      };
-      fetchTrip();
-    }
-  }, [searchParams, user]);
-
-  const disabledDays = [
-    addDays(new Date(), 2),
-    addDays(new Date(), 3),
-    addDays(new Date(), 6),
-  ];
-
-  const handleAIGenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      setSelectedCourses([{ destId: "incheon", subIndex: 3 }]); 
-      setExpandedCity("incheon");
-      setMediaType("video");
-      setPickup({ selected: true, type: 'oneway' });
-      setMedical({ selected: true, field: "치과 (스케일링)" });
-      setStep(3);
-    }, 1500);
-  };
-
-  const toggleCourse = (destId: string, subIndex: number) => {
-    setSelectedCourses(prev => {
-      const exists = prev.find(p => p.destId === destId && p.subIndex === subIndex);
-      if (exists) {
-        return prev.filter(p => !(p.destId === destId && p.subIndex === subIndex));
-      } else {
-        return [...prev, { destId, subIndex }];
+      } catch (e) {
+        console.error("Failed to load existing trip", e);
       }
-    });
-  };
-
-  const handleAddCustomCourse = () => {
-    if (!customInputName.trim()) return;
-    const newCourse = {
-      id: Date.now().toString(),
-      name: customInputName.trim(),
-      desc: customInputDesc.trim() || "직접 입력한 희망 장소",
     };
-    setCustomCourses([...customCourses, newCourse]);
-    setCustomInputName("");
-    setCustomInputDesc("");
+    loadTrip();
+  }, [tripId, user, authLoading]);
+
+  const toggleSubExp = (id: string) => {
+    if (!id) return;
+    setSelectedSubExps(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
   };
 
-  const removeCustomCourse = (id: string) => {
-    setCustomCourses(prev => prev.filter(c => c.id !== id));
+  const toggleAddOn = (id: string) => {
+    if (!id) return;
+    setSelectedAddOns(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
   };
 
-  const basePrice = selectedCourses.reduce((acc, course) => {
-    const dest = destinations.find(d => d.id === course.destId);
-    if (!dest) return acc;
-    return acc + dest.subDestinations[course.subIndex].priceValue;
-  }, 0);
-  
-  const mediaPriceMultiplier = mediaType === "video" ? 1.5 : 1;
-  const calculatedBasePrice = basePrice * mediaPriceMultiplier;
+  const handleNext = () => {
+    if (step < 3) setStep(step + 1);
+  };
 
-  // Addon pricing logic
-  const pickupPrice = pickup.selected ? (pickup.type === 'roundtrip' ? 300 : 150) : 0;
-  const rentalPrice = rental.selected ? (rental.type === 'car_only' ? 150 * rental.days : 250 * rental.distanceUnits) : 0;
-  const stayTierPrices: Record<string, number> = { airbnb: 100, standard: 200, premium: 400 };
-  const stayPrice = stay.selected ? (stayTierPrices[stay.type as string] || 100) * stay.customDays : 0;
-  const totalAddonPrice = pickupPrice + rentalPrice + stayPrice;
-  const totalPrice = calculatedBasePrice + totalAddonPrice;
+  const handlePrev = () => {
+    if (step > 1) setStep(step - 1);
+  };
 
-  const handleSaveTrip = async () => {
-    if (!user) return alert("로그인이 필요합니다.");
-    setIsSavingTrip(true);
+  const handleSaveOnly = async () => {
+    if (!user) {
+      alert(t("로그인 후 마이페이지에 여정을 저장할 수 있습니다. 로그인 페이지로 이동합니다.", "Please log in to save your trip to My Page. Redirecting to login..."));
+      router.push("/login");
+      return;
+    }
+
+    const datesStr = date?.from && date?.to 
+      ? `${format(date.from, 'MMM d, yyyy')} - ${format(date.to, 'MMM d, yyyy')}`
+      : 'Not specified';
+
+    setSavingTrip(true);
     try {
-      const tripData = {
+      const payload = {
         userId: user.uid,
-        selectedCourses: selectedCourses.map(c => destinations.find(d => d.id === c.destId)?.subDestinations[c.subIndex]?.name || ""),
-        rawCourses: selectedCourses,
-        customCourses,
-        addons: { pickup, rental, stay, medical, transit },
-        totalPrice,
-        dateRange: {
-          from: dateRange.from ? dateRange.from.toISOString() : null,
-          to: dateRange.to ? dateRange.to.toISOString() : null
-        },
+        userEmail: user.email,
+        dates: datesStr,
+        dateFrom: date?.from ? date.from.toISOString() : null,
+        dateTo: date?.to ? date.to.toISOString() : null,
+        guests,
+        language: prefLang,
+        selectedSubExps,
+        selectedSubExpsLabels: selectedSubExps.map(id => subExperiences.find(s => s.id === id)?.labelKo).filter(Boolean),
+        selectedSubExpsLabelsEn: selectedSubExps.map(id => subExperiences.find(s => s.id === id)?.labelEn).filter(Boolean),
+        selectedAddOns,
+        selectedAddOnsLabels: selectedAddOns.map(id => addOnServicesList.find(a => a.id === id)?.labelKo).filter(Boolean),
+        selectedAddOnsLabelsEn: selectedAddOns.map(id => addOnServicesList.find(a => a.id === id)?.labelEn).filter(Boolean),
+        notes,
+        status: "저장됨",
         updatedAt: new Date().toISOString()
       };
 
-      const existingTripId = searchParams.get("tripId");
-      if (existingTripId) {
-        await updateDoc(doc(db, "journeymate_trips", existingTripId), tripData);
-        alert("여정이 성공적으로 업데이트되었습니다. 마이페이지에서 확인 가능합니다.");
+      if (editingTripId) {
+        await updateDoc(doc(db, "journeymate_trips", editingTripId), payload);
+        alert(t("여정이 성공적으로 수정되었습니다!", "Your journey has been updated!"));
       } else {
         await addDoc(collection(db, "journeymate_trips"), {
-          ...tripData,
+          ...payload,
           createdAt: new Date().toISOString()
         });
-        alert("새로운 여정이 임시 저장되었습니다. 마이페이지에서 확인 가능합니다.");
+        alert(t("여정이 마이페이지에 안전하게 저장되었습니다!", "Your journey has been saved to My Page!"));
       }
-    } catch (err) {
-      console.error(err);
-      alert("저장에 실패했습니다.");
+      router.push("/mypage");
+    } catch (e) {
+      console.error("Failed to save trip to Firestore", e);
+      alert(t("저장에 실패했습니다.", "Failed to save trip."));
+    } finally {
+      setSavingTrip(false);
     }
-    setIsSavingTrip(false);
   };
 
+  const handleSaveAndChat = async () => {
+    const datesStr = date?.from && date?.to 
+      ? `${format(date.from, 'MMM d, yyyy')} - ${format(date.to, 'MMM d, yyyy')}`
+      : 'Not specified';
+      
+    const selectedItemsStr = selectedSubExps
+      .map(id => {
+        const item = subExperiences.find(s => s.id === id);
+        return item ? `• ${isEn ? item.labelEn : item.labelKo} (${isEn ? item.locationEn : item.locationKo})` : null;
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    const selectedAddOnsStr = selectedAddOns
+      .map(id => {
+        const item = addOnServicesList.find(a => a.id === id);
+        return item ? `• ${isEn ? item.labelEn : item.labelKo}` : null;
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    if (user) {
+      setSavingTrip(true);
+      try {
+        const payload = {
+          userId: user.uid,
+          userEmail: user.email,
+          dates: datesStr,
+          dateFrom: date?.from ? date.from.toISOString() : null,
+          dateTo: date?.to ? date.to.toISOString() : null,
+          guests,
+          language: prefLang,
+          selectedSubExps,
+          selectedSubExpsLabels: selectedSubExps.map(id => subExperiences.find(s => s.id === id)?.labelKo).filter(Boolean),
+          selectedSubExpsLabelsEn: selectedSubExps.map(id => subExperiences.find(s => s.id === id)?.labelEn).filter(Boolean),
+          selectedAddOns,
+          selectedAddOnsLabels: selectedAddOns.map(id => addOnServicesList.find(a => a.id === id)?.labelKo).filter(Boolean),
+          selectedAddOnsLabelsEn: selectedAddOns.map(id => addOnServicesList.find(a => a.id === id)?.labelEn).filter(Boolean),
+          notes,
+          status: "상담 신청 완료",
+          updatedAt: new Date().toISOString()
+        };
+
+        if (editingTripId) {
+          await updateDoc(doc(db, "journeymate_trips", editingTripId), payload);
+        } else {
+          await addDoc(collection(db, "journeymate_trips"), {
+            ...payload,
+            createdAt: new Date().toISOString()
+          });
+        }
+      } catch (e) {
+        console.error("Failed to save trip to Firestore", e);
+      } finally {
+        setSavingTrip(false);
+      }
+    }
+
+    const msg = `Hello! I'd like to plan my JourneyMate experience.
+
+📅 Dates: ${datesStr}
+👥 Guests: ${guests}
+🌍 Language: ${prefLang === 'english' ? 'English' : prefLang === 'korean' ? 'Korean' : 'Japanese (日本語)'}
+
+❤️ Selected Experiences:
+${selectedItemsStr || 'None selected'}
+
+✨ Selected VIP Add-On Services:
+${selectedAddOnsStr || 'None selected'}
+
+📝 Special Requests:
+${notes || 'None'}
+
+Looking forward to hearing from you!`;
+
+    window.open(`https://wa.me/821099008210?text=${encodeURIComponent(msg)}`, '_blank');
+  };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold tracking-tight mb-3">{t("스마트 여행 빌더", "Smart Trip Builder")}</h1>
-        <p className="text-gray-500 mb-2">{t("원하는 여행 스타일을 입력하거나 여러 장소를 직접 담아보세요.", "Enter your desired travel style or add multiple places yourself.")}</p>
-        <p className="text-sm font-medium text-blue-600 bg-blue-50 py-2 px-4 rounded-full inline-block">
-          {t("안내: 명시된 금액은 촬영에 대한 비용입니다. 현지 동반자로서 안전하고 즐거운 여행이 되도록 최선을 다하겠습니다.", "Notice: The stated price is for the shoot. As your local companion, we will do our best to ensure a safe and enjoyable trip.")}
-        </p>
-      </div>
-
-      {/* AI Prompt */}
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-12 p-6 md:p-8 rounded-3xl bg-white shadow-xl shadow-blue-900/5 border border-blue-100"
-      >
-        <h2 className="text-xl font-bold flex items-center gap-2 mb-4 text-blue-900">
-          <Sparkles className="text-blue-600 w-6 h-6" /> 
-          {t("AI 플래너에게 여행 맡기기", "Let AI Planner Build Your Trip")}
-        </h2>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <input 
-            type="text" 
-            placeholder={t("예: 내일 인천 섬에서 브이로그 찍고 피부과도 갈래.", "ex: I want to shoot a vlog on an Incheon island tomorrow and go to a dermatologist.")}
-            className="flex-1 rounded-2xl bg-gray-50 border-transparent px-6 py-4 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all text-lg placeholder:text-gray-400"
-            value={aiPrompt}
-            onChange={(e) => setAiPrompt(e.target.value)}
-          />
-          <Button size="lg" className="h-[60px] px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20 text-lg" onClick={handleAIGenerate} disabled={!aiPrompt || isGenerating}>
-            {isGenerating ? t("일정 구성 중...", "Generating...") : t("매직 빌드 시작", "Start Magic Build")}
-          </Button>
+    <div className="min-h-screen bg-[var(--color-jm-cream)] text-[var(--color-jm-text)] pt-28 pb-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-4">
+            {editingTripId 
+              ? t('✏️ 기존 여정 수정하기', 'Edit Your Journey')
+              : t('나만의 여정 만들기', 'Create Your Journey')}
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            {t('꿈꾸던 여행을 말씀해주세요. 세부 체험을 자유롭게 조합해보세요.', 'Tell us about your dream trip. Custom-combine experiences to craft your journey.')}
+          </p>
         </div>
-      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Step 1: Base Trip & Media Type */}
-          <section className={`p-8 rounded-3xl transition-all duration-500 ${step >= 1 ? 'bg-white shadow-lg border border-gray-100' : 'bg-white/60 border border-dashed border-gray-200 opacity-70'}`}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold flex items-center gap-3 text-gray-900">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step > 1 ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                  {step > 1 ? <CheckCircle2 className="w-5 h-5" /> : "1"}
-                </div>
-                {t("촬영 형태 및 장소 선택", "Select Shoot Type & Location")}
-              </h3>
-              {step > 1 && (
-                <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-blue-600 underline underline-offset-4">{t("수정", "Edit")}</button>
+        {/* Progress Bar */}
+        <div className="flex justify-center items-center mb-12">
+          {[1, 2, 3].map((s, i) => (
+            <div key={s} className="flex items-center">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-colors ${
+                step >= s ? 'bg-[var(--color-jm-navy)] text-white' : 'bg-white border border-[var(--color-jm-border)] text-gray-400'
+              }`}>
+                {step > s ? <Check className="w-5 h-5" /> : s}
+              </div>
+              {i < 2 && (
+                <div className={`w-16 h-0.5 mx-2 transition-colors ${
+                  step > s ? 'bg-[var(--color-jm-navy)]' : 'bg-[var(--color-jm-border)]'
+                }`} />
               )}
             </div>
+          ))}
+        </div>
 
-            <AnimatePresence>
-              {step === 1 && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden space-y-6">
-                  
-                  {/* Media Type Selection */}
+        {/* Form Container */}
+        <div className="bg-white rounded-2xl border border-[var(--color-jm-border)] p-8 md:p-12 shadow-sm min-h-[500px] flex flex-col">
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1"
+              >
+                <h2 className="text-2xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-8 flex items-center gap-2">
+                  <CalendarIcon className="w-6 h-6 text-[var(--color-jm-gold)]" />
+                  {t('1. 여행 기본 정보', '1. Travel Details')}
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div>
-                    <h4 className="font-bold text-gray-700 mb-3">{t("촬영 형태 (전체 여정에 일괄 적용)", "Shoot Type (Applied to entire trip)")}</h4>
-                    <div className="flex gap-4">
-                      <button 
-                        onClick={() => setMediaType("photo")}
-                        className={`flex-1 p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${mediaType === 'photo' ? 'border-blue-600 bg-blue-50/50 text-blue-800' : 'border-gray-200 text-gray-600 hover:border-blue-300 hover:text-gray-900'}`}
-                      >
-                        <Camera className="w-6 h-6" />
-                        <span className="font-bold text-gray-900">{t("사진 스냅 (Photo)", "Photo Snap")}</span>
-                      </button>
-                      <button 
-                        onClick={() => setMediaType("video")}
-                        className={`flex-1 p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${mediaType === 'video' ? 'border-blue-600 bg-blue-50/50 text-blue-800' : 'border-gray-200 text-gray-600 hover:border-blue-300 hover:text-gray-900'}`}
-                      >
-                        <Video className="w-6 h-6" />
-                        <span className="font-bold text-gray-900">{t("시네마틱 영상 (Video)", "Cinematic Video")}</span>
-                      </button>
+                    <label className="block text-sm font-medium text-gray-700 mb-4">
+                      {t('날짜 선택', 'Select Dates')}
+                    </label>
+                    <div className="border border-[var(--color-jm-border)] rounded-xl p-4 flex justify-center bg-[var(--color-jm-cream-dark)]">
+                      <DayPicker
+                        mode="range"
+                        selected={date}
+                        onSelect={setDate}
+                        className="font-sans"
+                        classNames={{
+                          day_selected: "bg-[var(--color-jm-navy)] text-white hover:bg-[var(--color-jm-navy)]",
+                          day_today: "font-bold text-[var(--color-jm-gold)]",
+                        }}
+                      />
                     </div>
                   </div>
 
-                  {/* Course Selection (Multi-select with Accordion) */}
-                  <div>
-                    <h4 className="font-bold text-gray-700 mb-3">{t("지역을 선택하고 장소를 담아보세요", "Select a region and add places")}</h4>
-                    <div className="space-y-3">
-                      {destinations.map(dest => {
-                        const isExpanded = expandedCity === dest.id;
-                        const selectedCount = selectedCourses.filter(c => c.destId === dest.id).length;
-                        
-                        return (
-                          <div key={dest.id} className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'border-blue-300 shadow-md bg-blue-50/30' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
-                            {/* Accordion Header */}
-                            <button 
-                              onClick={() => setExpandedCity(isExpanded ? null : dest.id)}
-                              className="w-full px-5 py-4 flex items-center justify-between focus:outline-none"
-                            >
-                              <div className="flex items-center gap-3">
-                                <MapPin className={`w-5 h-5 ${isExpanded ? 'text-blue-600' : 'text-gray-400'}`} /> 
-                                <span className="font-bold text-lg text-gray-900">{t(dest.title, dest.titleEn || dest.title)}</span>
-                                {selectedCount > 0 && (
-                                  <span className="ml-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                    {selectedCount}{t("개 담김", " added")}
-                                  </span>
-                                )}
-                              </div>
-                              {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
-                            </button>
-                            
-                            {/* Accordion Content */}
-                            <AnimatePresence>
-                              {isExpanded && (
-                                <motion.div 
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  className="overflow-hidden"
-                                >
-                                  <div className="px-5 pb-5 grid sm:grid-cols-2 gap-3 pt-2">
-                                    {dest.subDestinations.map((sub, idx) => {
-                                      const isSelected = selectedCourses.some(c => c.destId === dest.id && c.subIndex === idx);
-                                      return (
-                                        <div 
-                                          key={idx}
-                                          onClick={() => toggleCourse(dest.id, idx)}
-                                          className={`p-4 rounded-xl cursor-pointer border-2 transition-all duration-200 flex flex-col justify-between ${isSelected ? 'border-blue-600 bg-white shadow-sm' : 'border-gray-100 bg-white hover:border-blue-200'}`}
-                                        >
-                                          <div>
-                                            <div className="font-bold text-gray-900 mb-1">{t(sub.name, sub.nameEn || sub.name)}</div>
-                                            <div className="text-xs text-gray-500 line-clamp-2">{t(sub.desc, sub.descEn || sub.desc)}</div>
-                                          </div>
-                                          <div className="mt-3 flex justify-between items-center">
-                                            <div className="font-semibold text-blue-600 text-sm">${sub.priceValue * (mediaType==='video'?1.5:1)}</div>
-                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
-                                              {isSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        );
-                      })}
-
-                      {/* Custom Destination Accordion */}
-                      <div className={`border rounded-2xl overflow-hidden transition-all duration-300 ${expandedCity === 'custom' ? 'border-indigo-300 shadow-md bg-indigo-50/30' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
+                  <div className="space-y-8">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
+                        <Users className="w-4 h-4 text-gray-400" />
+                        {t('인원 수', 'Number of Guests')}
+                      </label>
+                      <div className="flex items-center gap-4">
                         <button 
-                          onClick={() => setExpandedCity(expandedCity === 'custom' ? null : 'custom')}
-                          className="w-full px-5 py-4 flex items-center justify-between focus:outline-none"
+                          onClick={() => setGuests(Math.max(1, guests - 1))}
+                          className="w-10 h-10 rounded-full border border-[var(--color-jm-border)] flex items-center justify-center hover:bg-gray-50 transition-colors font-bold"
                         >
-                          <div className="flex items-center gap-3">
-                            <Sparkles className={`w-5 h-5 ${expandedCity === 'custom' ? 'text-indigo-600' : 'text-gray-400'}`} /> 
-                            <span className="font-bold text-lg text-gray-900">{t("희망하는 곳 (직접 입력)", "Desired Location (Custom)")}</span>
-                            {customCourses.length > 0 && (
-                              <span className="ml-2 bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                {customCourses.length}{t("개 담김", " added")}
-                              </span>
-                            )}
-                          </div>
-                          {expandedCity === 'custom' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                          -
                         </button>
+                        <span className="text-xl font-bold w-8 text-center">{guests}</span>
+                        <button 
+                          onClick={() => setGuests(guests + 1)}
+                          className="w-10 h-10 rounded-full border border-[var(--color-jm-border)] flex items-center justify-center hover:bg-gray-50 transition-colors font-bold"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
 
-                        <AnimatePresence>
-                          {expandedCity === 'custom' && (
-                            <motion.div 
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="px-5 pb-5 pt-2">
-                                <div className="p-4 bg-white border border-gray-200 rounded-xl mb-4 shadow-sm">
-                                  <div className="mb-3">
-                                    <label className="block text-xs font-bold text-gray-500 mb-1">{t("장소명", "Location Name")}</label>
-                                    <input 
-                                      type="text" 
-                                      placeholder={t("예: 홍대 길거리, 제주도 해변 등", "ex: Hongdae Street, Jeju Beach")} 
-                                      value={customInputName}
-                                      onChange={(e) => setCustomInputName(e.target.value)}
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                                    />
-                                  </div>
-                                  <div className="mb-3">
-                                    <label className="block text-xs font-bold text-gray-500 mb-1">{t("어떤 여행과 촬영을 원하시나요? (선택)", "What kind of trip and shoot do you want? (Optional)")}</label>
-                                    <input 
-                                      type="text" 
-                                      placeholder={t("예: 아이돌 커버 댄스 촬영하고 싶어요", "ex: I want to shoot an idol cover dance")} 
-                                      value={customInputDesc}
-                                      onChange={(e) => setCustomInputDesc(e.target.value)}
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
-                                    />
-                                  </div>
-                                  <Button 
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700" 
-                                    onClick={handleAddCustomCourse}
-                                    disabled={!customInputName.trim()}
-                                  >
-                                    <Plus className="w-4 h-4 mr-2" /> {t("이 장소 장바구니에 담기", "Add this place to cart")}
-                                  </Button>
-                                </div>
-
-                                {customCourses.length > 0 && (
-                                  <div className="space-y-2">
-                                    {customCourses.map(course => (
-                                      <div key={course.id} className="flex justify-between items-center p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
-                                        <div>
-                                          <div className="font-bold text-indigo-900">{course.name}</div>
-                                          <div className="text-xs text-indigo-700">{course.desc}</div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                          <span className="text-xs font-bold text-gray-500 bg-white px-2 py-1 rounded border border-gray-200">{t("별도 결제", "Paid Separately")}</span>
-                                          <button onClick={() => removeCustomCourse(course.id)} className="p-1 hover:bg-indigo-200 rounded-md text-indigo-700 transition-colors">
-                                            <X className="w-4 h-4" />
-                                          </button>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-gray-400" />
+                        {t('선호 언어', 'Preferred Language')}
+                      </label>
+                      <div className="grid grid-cols-3 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setPrefLang('english')}
+                          className={`py-3 px-3 rounded-xl border transition-all font-medium text-center text-sm sm:text-base ${
+                            prefLang === 'english' 
+                              ? 'border-[var(--color-jm-navy)] bg-[var(--color-jm-navy)] text-white shadow-md' 
+                              : 'border-[var(--color-jm-border)] text-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          English
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPrefLang('korean')}
+                          className={`py-3 px-3 rounded-xl border transition-all font-medium text-center text-sm sm:text-base ${
+                            prefLang === 'korean' 
+                              ? 'border-[var(--color-jm-navy)] bg-[var(--color-jm-navy)] text-white shadow-md' 
+                              : 'border-[var(--color-jm-border)] text-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          한국어
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPrefLang('japanese')}
+                          className={`py-3 px-3 rounded-xl border transition-all font-medium text-center text-sm sm:text-base ${
+                            prefLang === 'japanese' 
+                              ? 'border-[var(--color-jm-navy)] bg-[var(--color-jm-navy)] text-white shadow-md' 
+                              : 'border-[var(--color-jm-border)] text-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          日本語
+                        </button>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="mt-6 flex justify-end">
-                    <Button size="lg" className="rounded-full px-8" onClick={() => {
-                      setStep(2);
-                    }} disabled={selectedCourses.length === 0 && customCourses.length === 0}>{t("다음 단계", "Next Step")} <ChevronRight className="w-4 h-4 ml-1" /></Button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </section>
-
-          {/* Step 2: Date */}
-          <section className={`p-8 rounded-3xl transition-all duration-500 ${step >= 2 ? 'bg-white shadow-lg border border-gray-100' : 'bg-white/40 border border-gray-200 opacity-60 pointer-events-none'}`}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold flex items-center gap-3 text-gray-900">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step > 2 ? 'bg-green-100 text-green-700' : step === 2 ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'}`}>
-                  {step > 2 ? <CheckCircle2 className="w-5 h-5" /> : "2"}
                 </div>
-                {t("전체 일정 선택", "Select Total Schedule")}
-              </h3>
-               {step > 2 && (
-                <button onClick={() => setStep(2)} className="text-sm text-gray-500 hover:text-blue-600 underline underline-offset-4">{t("수정", "Edit")}</button>
-              )}
-            </div>
-            
-            <AnimatePresence>
-              {step === 2 && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden space-y-6 flex flex-col items-center sm:items-start">
-                  
-                  <div className="w-full">
-                    <div className="mb-4 text-sm text-blue-600 font-bold bg-blue-50 p-3 rounded-lg inline-block">
-                      💡 {t("여행이 진행될 전체 기간을 선택해주세요.", "Please select the entire trip period.")}
-                    </div>
-                    <DayPicker 
-                      mode="range"
-                      selected={dateRange}
-                      onSelect={(range) => setDateRange({ from: range?.from, to: range?.to })}
-                      disabled={[{ before: new Date() }, ...disabledDays]}
-                      modifiers={{ disabled: disabledDays }}
-                      modifiersStyles={{ disabled: { textDecoration: 'line-through', color: '#ccc' } }}
-                      className="border rounded-2xl p-4 bg-gray-50 shadow-sm mx-auto sm:mx-0"
-                    />
-                  </div>
+              </motion.div>
+            )}
 
-                  <div className="flex w-full justify-end">
-                    <Button size="lg" className="rounded-full px-8" onClick={() => setStep(3)} disabled={!dateRange.from}>
-                      {t("다음 단계", "Next Step")} <ChevronRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </section>
-
-          {/* Step 3: Add-ons */}
-          <section className={`p-8 rounded-3xl transition-all duration-500 ${step >= 3 ? 'bg-white shadow-lg border border-gray-100' : 'bg-white/40 border border-gray-200 opacity-60 pointer-events-none'}`}>
-            <h3 className="text-xl font-bold flex items-center gap-3 mb-6 text-gray-900">
-               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step === 3 ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'}`}>
-                  3
-                </div>
-              {t("부가 서비스 추가 (선택)", "Add Extra Services (Optional)")}
-            </h3>
-            
-            <AnimatePresence>
-              {step === 3 && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden space-y-4">
-                  
-                  {/* VIP Pickup */}
-                  <div className={`rounded-2xl border-2 transition-all overflow-hidden ${pickup.selected ? 'border-blue-600' : 'border-gray-100'}`}>
-                    <label className={`flex items-center justify-between p-5 cursor-pointer ${pickup.selected ? 'bg-blue-50/20' : 'hover:bg-gray-50'}`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${pickup.selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                          <Plane className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-lg">{t("공항 VIP 픽업 (콜밴)", "Airport VIP Pickup (Call Van)")}</div>
-                          <div className="text-sm text-gray-500">{t("외국어 가능 기사님, 호텔까지 다이렉트 이동", "Foreign language speaking driver, direct transfer to hotel")}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <input type="checkbox" checked={pickup.selected} onChange={() => setPickup(p => ({ ...p, selected: !p.selected }))} className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-600" />
-                      </div>
-                    </label>
-                    <AnimatePresence>
-                      {pickup.selected && (
-                        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
-                          <div className="p-5 bg-white border-t border-blue-100 space-y-4">
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 mb-2">{t("이용 방식", "Usage Type")}</label>
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={pickup.type === 'oneway'} onChange={() => setPickup(p => ({ ...p, type: 'oneway' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("편도 ($150)", "One-way ($150)")}</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={pickup.type === 'roundtrip'} onChange={() => setPickup(p => ({ ...p, type: 'roundtrip' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("왕복 ($300)", "Round-trip ($300)")}</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div className="text-xs text-blue-800 bg-blue-50/50 p-4 rounded-lg">
-                              💡 {t("안내: 1~4인 기준 금액입니다. 인원 추가 시 차량 변경으로 인해 추가 비용이 발생할 수 있습니다.", "Notice: Price is for 1~4 people. Additional costs may apply for vehicle change due to extra passengers.")}
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Rental Car */}
-                  <div className={`rounded-2xl border-2 transition-all overflow-hidden ${rental.selected ? 'border-blue-600' : 'border-gray-100'}`}>
-                    <label className={`flex items-center justify-between p-5 cursor-pointer ${rental.selected ? 'bg-blue-50/20' : 'hover:bg-gray-50'}`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${rental.selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                          <Car className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-lg">{t("프리미엄 렌트카 연계", "Premium Rental Car")}</div>
-                          <div className="text-sm text-gray-500">{t("차량 단기 렌트 및 전담 기사 서비스", "Short-term car rental and dedicated driver service")}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <input type="checkbox" checked={rental.selected} onChange={() => setRental(r => ({ ...r, selected: !r.selected }))} className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-600" />
-                      </div>
-                    </label>
-                    <AnimatePresence>
-                      {rental.selected && (
-                        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
-                          <div className="p-5 bg-white border-t border-blue-100 space-y-4">
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 mb-2">{t("이용 방식", "Usage Type")}</label>
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={rental.type === 'car_only'} onChange={() => setRental(r => ({ ...r, type: 'car_only' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("차량만 렌트 ($150/일)", "Car Only ($150/day)")}</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={rental.type === 'with_driver'} onChange={() => setRental(r => ({ ...r, type: 'with_driver' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("기사 포함 ($250 / 100km)", "With Driver ($250 / 100km)")}</span>
-                                </label>
-                              </div>
-                            </div>
-                            {rental.type === 'car_only' ? (
-                              <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("이용 일수 (일)", "Days of Use")}</label>
-                                <input type="number" min="1" max="30" value={rental.days} onChange={e => setRental(r => ({ ...r, days: parseInt(e.target.value) || 1 }))} className="w-24 px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600" />
-                              </div>
-                            ) : (
-                              <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("이용 거리 (100km 단위)", "Distance (per 100km)")}</label>
-                                <input type="number" min="1" max="100" value={rental.distanceUnits} onChange={e => setRental(r => ({ ...r, distanceUnits: parseInt(e.target.value) || 1 }))} className="w-24 px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600" />
-                                <div className="text-xs text-gray-500 mt-2">
-                                  * {t("1단위 = 100km (기본). 일일 투어 이동거리를 기준으로 선택해 주세요.", "1 unit = 100km (Basic). Please select based on daily tour travel distance.")}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Accommodation (Stay) */}
-                  <div className={`rounded-2xl border-2 transition-all overflow-hidden ${stay.selected ? 'border-blue-600' : 'border-gray-100'}`}>
-                    <label className={`flex items-center justify-between p-5 cursor-pointer ${stay.selected ? 'bg-blue-50/20' : 'hover:bg-gray-50'}`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${stay.selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                          <Building className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-lg">{t("로컬 감성 숙소 연계", "Local Vibe Accommodation")}</div>
-                          <div className="text-sm text-gray-500">{t("감성 있는 숙소 추천 및 대리 예약", "Vibe accommodation recommendation and booking proxy")}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <input type="checkbox" checked={stay.selected} onChange={() => setStay(s => ({ ...s, selected: !s.selected }))} className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-600" />
-                      </div>
-                    </label>
-                    <AnimatePresence>
-                      {stay.selected && (
-                        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
-                          <div className="p-5 bg-white border-t border-blue-100 space-y-4">
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 mb-2">{t("숙소 등급 선택", "Select Accommodation Tier")}</label>
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={stay.type === 'airbnb'} onChange={() => setStay(s => ({ ...s, type: 'airbnb' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("에어비앤비급 ($100/박)", "Airbnb Level ($100/night)")}</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={stay.type === 'standard'} onChange={() => setStay(s => ({ ...s, type: 'standard' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("일반호텔 ($200/박)", "Standard Hotel ($200/night)")}</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={stay.type === 'premium'} onChange={() => setStay(s => ({ ...s, type: 'premium' }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("고급호텔 ($400/박)", "Premium Hotel ($400/night)")}</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-bold text-gray-700 mb-2">{t("숙박 기준일", "Stay Duration Base")}</label>
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={stay.useTotalTripDates} onChange={() => setStay(s => ({ ...s, useTotalTripDates: true }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t(`전체 여행 일정 기준 (${totalTripDays}박)`, `Total Trip Schedule (${totalTripDays} nights)`)}</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={!stay.useTotalTripDates} onChange={() => setStay(s => ({ ...s, useTotalTripDates: false }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("별도 일정 입력", "Enter separate schedule")}</span>
-                                </label>
-                              </div>
-                            </div>
-                            {!stay.useTotalTripDates && (
-                              <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("숙박 일수 (박)", "Nights of Stay")}</label>
-                                <input type="number" min="1" max="30" value={stay.customDays} onChange={e => setStay(s => ({ ...s, customDays: parseInt(e.target.value) || 1 }))} className="w-24 px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600" />
-                              </div>
-                            )}
-                            <div className="text-xs text-blue-800 bg-blue-50/50 p-4 rounded-lg mt-2">
-                              💡 {t("안내: 숙소 요금은 2인 1실 기준입니다. 기본 단가를 적용하여 가산정되며, 실제 숙소 및 인원 추가에 따라 결제 금액이 달라질 수 있습니다.", "Notice: Room rates are based on double occupancy. It is estimated by applying the base unit price, and the final payment amount may vary depending on the actual accommodation and additional persons.")}
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Premium Medical */}
-                  <div className={`rounded-2xl border-2 transition-all overflow-hidden ${medical.selected ? 'border-blue-600' : 'border-gray-100'}`}>
-                    <label className={`flex items-center justify-between p-5 cursor-pointer ${medical.selected ? 'bg-blue-50/20' : 'hover:bg-gray-50'}`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${medical.selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                          <Stethoscope className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-lg">{t("프리미엄 의료/뷰티 연계", "Premium Medical/Beauty")}</div>
-                          <div className="text-sm text-gray-500">{t("검진, 미용, 시술 등 맞춤 병원/클리닉 추천", "Customized hospital/clinic recommendations for checkups, beauty, procedures")}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="font-bold text-blue-600">{t("별도 결제", "Paid Separately")}</div>
-                        <input type="checkbox" checked={medical.selected} onChange={() => setMedical(m => ({ ...m, selected: !m.selected }))} className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-600" />
-                      </div>
-                    </label>
-                    <AnimatePresence>
-                      {medical.selected && (
-                        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
-                          <div className="p-5 bg-white border-t border-blue-100">
-                            <label className="block text-sm font-bold text-gray-700 mb-2">{t("희망하는 의료/뷰티 분야를 적어주세요", "Please write down your desired medical/beauty field")}</label>
-                            <input 
-                              type="text" 
-                              placeholder={t("예: 치과 스케일링, 피부과 리프팅 등", "ex: Dental scaling, Dermatology lifting")}
-                              value={medical.field}
-                              onChange={e => setMedical(m => ({ ...m, field: e.target.value }))}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600 text-sm"
-                            />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Public Transit */}
-                  <div className={`rounded-2xl border-2 transition-all overflow-hidden ${transit.selected ? 'border-blue-600' : 'border-gray-100'}`}>
-                    <label className={`flex items-center justify-between p-5 cursor-pointer ${transit.selected ? 'bg-blue-50/20' : 'hover:bg-gray-50'}`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${transit.selected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                          <Train className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-lg">{t("대중교통 안내 및 동행", "Public Transit Guide & Companion")}</div>
-                          <div className="text-sm text-gray-500">{t("목적지까지 최적의 저렴한 이동 방법 안내", "Optimal, cheap public transit routes to destinations")}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="font-bold text-blue-600">{t("별도 결제", "Paid Separately")}</div>
-                        <input type="checkbox" checked={transit.selected} onChange={() => setTransit(t => ({ ...t, selected: !t.selected }))} className="w-6 h-6 rounded-md border-gray-300 text-blue-600 focus:ring-blue-600" />
-                      </div>
-                    </label>
-                    <AnimatePresence>
-                      {transit.selected && (
-                        <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
-                          <div className="p-5 bg-white border-t border-blue-100">
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("출발지", "Departure")}</label>
-                                <input 
-                                  type="text" 
-                                  placeholder={t("예: 서울역", "ex: Seoul Station")}
-                                  value={transit.departure}
-                                  onChange={e => setTransit(t => ({ ...t, departure: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600 text-sm"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{t("목적지", "Destination")}</label>
-                                <input 
-                                  type="text" 
-                                  placeholder={t("예: 속초 고속터미널", "ex: Sokcho Express Bus Terminal")}
-                                  value={transit.destination}
-                                  onChange={e => setTransit(t => ({ ...t, destination: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600 text-sm"
-                                />
-                              </div>
-                            </div>
-                            <div className="mb-2">
-                              <label className="block text-sm font-bold text-gray-700 mb-2">{t("동행 여부", "Accompanied")}</label>
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={transit.accompany === true} onChange={() => setTransit(t => ({ ...t, accompany: true }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("동행 필요", "Need Companion")}</span>
-                                </label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input type="radio" checked={transit.accompany === false} onChange={() => setTransit(t => ({ ...t, accompany: false }))} className="text-blue-600 focus:ring-blue-600" />
-                                  <span className="text-sm">{t("비동행 (안내만)", "Guide Only")}</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div className="text-xs text-blue-800 bg-blue-50/50 p-4 rounded-lg mt-3">
-                              💡 {t("안내: 요청하신 일정을 확인 후 대중교통 이용 방법을 상세히 안내해 드리며, 필요시 동행해 드립니다. 비용은 별도 안내됩니다.", "Notice: We will check your requested schedule and guide you in detail on how to use public transit, and accompany you if needed. Costs will be notified separately.")}
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </section>
-        </div>
-
-        {/* Sidebar Summary */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-gray-900 text-white rounded-3xl p-8 shadow-2xl">
-            <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
-              {t("내 여행 영수증", "My Trip Receipt")}
-            </h3>
-            
-            <div className="space-y-6 mb-8">
-              <div>
-                <div className="text-gray-400 text-sm mb-2">{t("선택한 장소", "Selected Places")} ({mediaType === 'video' ? t('영상', 'Video') : t('스냅', 'Snap')})</div>
-                {selectedCourses.length === 0 && customCourses.length === 0 ? (
-                  <div className="text-gray-500 italic text-sm">{t("담긴 장소가 없습니다.", "No places added.")}</div>
-                ) : (
-                  <div className="space-y-3">
-                    {selectedCourses.map((c, i) => {
-                      const d = destinations.find(x => x.id === c.destId);
-                      const s = d?.subDestinations[c.subIndex];
-                      if (!d || !s) return null;
-                      return (
-                        <div key={`c-${i}`} className="flex justify-between items-start text-sm">
-                          <span className="flex-1 pr-2">{d.title.split(' ')[0]} - {s.name}</span>
-                          <span className="font-medium text-blue-300">${s.priceValue * mediaPriceMultiplier}</span>
-                        </div>
-                      )
-                    })}
-                    {customCourses.map(c => (
-                      <div key={c.id} className="flex justify-between items-start text-sm text-indigo-300">
-                        <span className="flex-1 pr-2">{t("직접 입력", "Custom")} - {c.name}</span>
-                        <span className="font-medium">{t("별도 결제", "Paid Separately")}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Date Display */}
-              {(dateRange.from) && (
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 space-y-10"
+              >
                 <div>
-                  <div className="text-gray-400 text-sm mb-1">{t("전체 여행 기간", "Total Trip Period")}</div>
-                  <div className="font-medium text-emerald-400">
-                    {dateRange.to && dateRange.from.getTime() !== dateRange.to.getTime() 
-                      ? `${format(dateRange.from, 'MM/dd')} ~ ${format(dateRange.to, 'MM/dd')} (${totalTripDays}${t("일", " days")})`
-                      : `${format(dateRange.from, 'yyyy. MM. dd')} (1${t("일", " day")})`}
+                  <h2 className="text-2xl font-bold tracking-tight text-[var(--color-jm-navy)] mb-2 flex items-center gap-2">
+                    <Heart className="w-6 h-6 text-[var(--color-jm-gold)]" />
+                    {t('2. 경험 카테고리 & 세부 투어 선택', '2. Select Experience Category & Tour Items')}
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-6">
+                    {t('원하는 경험을 누르면 관련 세부 투어 항목이 아래에 나타납니다.', 'Click an experience category to view and select its detailed tour items below.')}
+                  </p>
+
+                  {/* 1. Category Buttons Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
+                    {categoryList.map(cat => {
+                      const isActive = selectedCategory === cat.id;
+                      const selCountInCat = subExperiences.filter(s => s.categoryId === cat.id && selectedSubExps.includes(s.id)).length;
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => setSelectedCategory(cat.id)}
+                          className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-2 relative ${
+                            isActive 
+                              ? 'border-[var(--color-jm-gold)] bg-[var(--color-jm-navy)] text-white shadow-md ring-2 ring-[var(--color-jm-gold)]' 
+                              : 'border-[var(--color-jm-border)] bg-[var(--color-jm-cream-dark)] text-[var(--color-jm-navy)] hover:bg-gray-200'
+                          }`}
+                        >
+                          {selCountInCat > 0 && (
+                            <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[var(--color-jm-gold)] text-white text-xs font-bold flex items-center justify-center shadow">
+                              {selCountInCat}
+                            </span>
+                          )}
+                          <span className="text-2xl">{cat.icon}</span>
+                          <span className="text-xs font-bold leading-tight">
+                            {t(cat.labelKo, cat.labelEn)}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* 2. Detailed Tour Items for Selected Category */}
+                  {(() => {
+                    const currentCat = categoryList.find(c => c.id === selectedCategory) || categoryList[0];
+                    return (
+                      <div className="bg-[var(--color-jm-cream-dark)] p-6 rounded-2xl border border-[var(--color-jm-border)] transition-all">
+                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--color-jm-border)]">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">{currentCat.icon}</span>
+                            <h3 className="text-base font-bold text-[var(--color-jm-navy)]">
+                              {t(
+                                `${currentCat.labelKo} 세부 투어 코스`,
+                                `${currentCat.labelEn} Detailed Tour Items`
+                              )}
+                            </h3>
+                          </div>
+                          <span className="text-xs text-gray-500 font-medium">
+                            {t('여러 개 선택 가능', 'Multiple selections allowed')}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {subExperiences
+                            .filter(sub => sub.categoryId === currentCat.id)
+                            .map(sub => {
+                              const isChecked = selectedSubExps.includes(sub.id);
+                              return (
+                                <div
+                                  key={sub.id}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    toggleSubExp(sub.id);
+                                  }}
+                                  className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-3 select-none ${
+                                    isChecked 
+                                      ? 'border-[var(--color-jm-gold)] bg-white shadow-md ring-1 ring-[var(--color-jm-gold)]' 
+                                      : 'border-[var(--color-jm-border)] bg-white/80 hover:bg-white hover:border-gray-300'
+                                  }`}
+                                >
+                                  <div className="space-y-1">
+                                    <span className="inline-block text-[11px] font-bold px-2 py-0.5 rounded bg-[var(--color-jm-navy)] text-white">
+                                      📍 {t(sub.locationKo, sub.locationEn)}
+                                    </span>
+                                    <h4 className="font-bold text-sm text-[var(--color-jm-navy)] leading-snug">
+                                      {t(sub.labelKo, sub.labelEn)}
+                                    </h4>
+                                  </div>
+                                  <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-1 transition-all pointer-events-none ${
+                                    isChecked 
+                                      ? 'bg-[var(--color-jm-gold)] border-[var(--color-jm-gold)] shadow-sm' 
+                                      : 'border-gray-300 bg-white'
+                                  }`}>
+                                    {isChecked && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* 3. VIP Add-On Services Section */}
+                <div className="pt-6 border-t border-[var(--color-jm-border)]">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold tracking-tight text-[var(--color-jm-navy)] mb-1 flex items-center gap-2">
+                      <span className="text-xl">✨</span>
+                      {t('프리미엄 부가 서비스 (VIP Add-On Services)', 'VIP Premium Add-On Services')}
+                    </h3>
+                    <p className="text-xs text-gray-600">
+                      {t('여행의 편의와 품격을 높여줄 VIP 전용 서비스입니다.', 'Enhance your trip convenience with our VIP services.')}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {addOnServicesList.map(addOn => {
+                      const isChecked = selectedAddOns.includes(addOn.id);
+                      return (
+                        <div
+                          key={addOn.id}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleAddOn(addOn.id);
+                          }}
+                          className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start justify-between gap-3 select-none ${
+                            isChecked 
+                              ? 'border-[var(--color-jm-gold)] bg-[var(--color-jm-cream-dark)] shadow-sm ring-1 ring-[var(--color-jm-gold)]' 
+                              : 'border-[var(--color-jm-border)] bg-white hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{addOn.icon}</span>
+                              <h4 className="font-bold text-sm text-[var(--color-jm-navy)]">
+                                {t(addOn.labelKo, addOn.labelEn)}
+                              </h4>
+                            </div>
+                            <p className="text-[11px] text-gray-600 leading-relaxed pl-7">
+                              {t(addOn.descKo, addOn.descEn)}
+                            </p>
+                          </div>
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-1 transition-all pointer-events-none ${
+                            isChecked 
+                              ? 'bg-[var(--color-jm-gold)] border-[var(--color-jm-gold)] shadow-sm' 
+                              : 'border-gray-300 bg-white'
+                          }`}>
+                            {isChecked && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              )}
 
-              <div className="h-px bg-gray-800 w-full" />
-              
-              <div>
-                <div className="text-gray-400 text-sm mb-2">{t("부가 서비스 (옵션)", "Extra Services (Options)")}</div>
-                {!(pickup.selected || rental.selected || stay.selected || medical.selected) ? (
-                  <div className="text-gray-500 text-sm italic">{t("선택된 항목 없음", "No selected items")}</div>
-                ) : (
-                  <div className="space-y-2">
-                    {pickup.selected && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span>{t("공항 픽업", "Airport Pickup")} ({pickup.type === 'oneway' ? t('편도', 'One-way') : t('왕복', 'Round-trip')})</span>
-                        <span className="text-blue-300">+${pickupPrice}</span>
-                      </div>
-                    )}
-                    {rental.selected && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span>{t("렌트카", "Rental Car")} ({rental.type === 'car_only' ? `${t("차량만", "Car Only")} ${rental.days}${t("일", " days")}` : `${t("기사포함", "With Driver")} ${rental.distanceUnits}00km`})</span>
-                        <span className="text-blue-300">+${rentalPrice}</span>
-                      </div>
-                    )}
-                    {stay.selected && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span>{t("숙소", "Accommodation")} ({stay.type === 'airbnb' ? t('에어비앤비급', 'Airbnb Level') : stay.type === 'standard' ? t('일반호텔', 'Standard Hotel') : t('고급호텔', 'Premium Hotel')}, {stay.customDays}{t("박", " nights")})</span>
-                        <span className="text-blue-300">+${stayPrice}</span>
-                      </div>
-                    )}
-                    {medical.selected && (
-                      <div className="flex justify-between items-center text-sm text-indigo-300">
-                        <span>{t("의료/뷰티 연계", "Medical/Beauty")} ({medical.field || t('미입력', 'Not entered')})</span>
-                        <span>{t("별도 결제", "Paid Separately")}</span>
-                      </div>
-                    )}
-                    {transit.selected && (
-                      <div className="flex justify-between items-center text-sm text-indigo-300">
-                        <span>{t("대중교통 안내", "Public Transit")} ({transit.departure || '-'} → {transit.destination || '-'}, {transit.accompany ? t('동행', 'Accompanied') : t('비동행', 'Unaccompanied')})</span>
-                        <span>{t("별도 결제", "Paid Separately")}</span>
-                      </div>
+                {/* Selected Summary Badge Row */}
+                <div className="pt-6 border-t border-[var(--color-jm-border)]">
+                  <div className="text-xs font-bold text-gray-500 mb-3">
+                    {t(
+                      `선택 현황: 세부 경험 ${selectedSubExps.length}개 + 부가 서비스 ${selectedAddOns.length}개`,
+                      `Current Selection: ${selectedSubExps.length} Experiences + ${selectedAddOns.length} Add-On Services`
                     )}
                   </div>
-                )}
-              </div>
-              
-              <div className="h-px bg-gray-800 w-full" />
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSubExps.map(id => {
+                      const item = subExperiences.find(s => s.id === id);
+                      if (!item) return null;
+                      return (
+                        <span key={id} className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--color-jm-navy)] text-white text-xs font-semibold rounded-full">
+                          <span>{t(item.labelKo, item.labelEn)}</span>
+                          <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSubExp(id); }} className="hover:text-[var(--color-jm-gold)] font-bold px-1">×</button>
+                        </span>
+                      );
+                    })}
+                    {selectedAddOns.map(id => {
+                      const item = addOnServicesList.find(a => a.id === id);
+                      if (!item) return null;
+                      return (
+                        <span key={id} className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--color-jm-gold)] text-white text-xs font-semibold rounded-full">
+                          <span>✨ {t(item.labelKo, item.labelEn)}</span>
+                          <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleAddOn(id); }} className="hover:text-[var(--color-jm-navy)] font-bold px-1">×</button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-              <div className="flex justify-between items-end">
-                <span className="text-gray-400">{t("총 결제 예정 금액", "Estimated Total Amount")}</span>
-                <span className="font-bold text-3xl text-emerald-400">${totalPrice}</span>
-              </div>
-              
-              <div className="bg-gray-800/50 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
-                {t("보증금(Deposit) 20%는 글로벌 결제로 우선 진행되며, 잔금 및 별도 결제 항목은 현장에서 결제하실 수 있습니다.", "A 20% deposit is processed first globally, and the balance and separately paid items can be paid on-site.")}
-              </div>
-            </div>
+            {step === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1"
+              >
+                <h2 className="text-2xl font-serif text-[var(--color-jm-navy)] mb-8 flex items-center gap-2">
+                  <MessageSquare className="w-6 h-6 text-[var(--color-jm-gold)]" />
+                  {t('추가 요청사항', 'Special Requests')}
+                </h2>
+                
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {t('특별히 원하시는 사항이 있다면 자유롭게 적어주세요.', 'Please share any special requests, dietary requirements, or specific places you\'d like to visit.')}
+                  </label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={6}
+                    className="w-full p-4 rounded-xl border border-[var(--color-jm-border)] bg-[var(--color-jm-cream-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-jm-gold)] transition-shadow resize-none"
+                    placeholder={t('예: 알러지가 있는 음식이 있습니다, 휠체어 이용이 필요합니다 등', 'e.g., Dietary restrictions, accessibility needs, etc.')}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            <div className="flex flex-col gap-3">
-              <Button className="w-full h-14 text-lg rounded-xl bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/30" disabled={(selectedCourses.length === 0 && customCourses.length === 0) || !dateRange.from}>
-                {t("결제창으로 이동", "Proceed to Checkout")}
-              </Button>
-              {user && (
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 text-base rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2" 
-                  onClick={handleSaveTrip}
-                  disabled={isSavingTrip || ((selectedCourses.length === 0 && customCourses.length === 0) || !dateRange.from)}
+          {/* Navigation Buttons */}
+          <div className="mt-12 pt-8 border-t border-[var(--color-jm-border)] flex justify-between items-center">
+            <button
+              onClick={handlePrev}
+              disabled={step === 1}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                step === 1 
+                  ? 'text-gray-300 cursor-not-allowed' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {t('이전', 'Back')}
+            </button>
+
+            {step < 3 ? (
+              <button
+                onClick={handleNext}
+                className="px-8 py-3 bg-[var(--color-jm-navy)] text-white rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center gap-2"
+              >
+                {t('다음', 'Next Step')}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSaveOnly}
+                  disabled={savingTrip}
+                  className="w-full sm:w-auto px-6 py-3 border-2 border-[var(--color-jm-navy)] text-[var(--color-jm-navy)] bg-white rounded-xl font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4" />
-                  {isSavingTrip ? t("내 여정 저장 중...", "Saving trip...") : t("내 여정 임시 저장", "Save Trip Temporarily")}
-                </Button>
-              )}
-            </div>
+                  <Save className="w-4 h-4 text-[var(--color-jm-navy)]" />
+                  {t('여정만 저장하기', 'Save Journey Only')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveAndChat}
+                  disabled={savingTrip}
+                  className="w-full sm:w-auto px-6 py-3 bg-[var(--color-jm-gold)] text-white rounded-xl font-bold hover:bg-amber-700 transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+                >
+                  <MessageSquare className="w-4 h-4 text-white" />
+                  {t('저장 & 호스트 상담 시작하기', 'Save & Start Host Chat')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -909,13 +706,10 @@ function BuilderContent() {
   );
 }
 
-export default function BuilderPage() {
+export default function CustomJourneyBuilder() {
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      <style>{css}</style>
-      <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-        <BuilderContent />
-      </Suspense>
-    </div>
+    <Suspense fallback={<div className="min-h-screen pt-32 text-center text-gray-500 font-bold">Loading Builder...</div>}>
+      <BuilderContent />
+    </Suspense>
   );
 }
