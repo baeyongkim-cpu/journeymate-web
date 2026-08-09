@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# large raw images
+/public/images/incheon/*센트럴파크.jpg
+/public/images/incheon/*송도센트럴파크.jpg
