@@ -116,7 +116,7 @@ export default function CoursesPage() {
 
           <div 
             ref={sliderRef}
-            className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 px-4 max-w-5xl mx-auto justify-start md:justify-center"
+            className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 px-4 w-max max-w-full mx-auto"
           >
             {filteredCourses.map((course, index) => {
             const isSelected = selectedCourse.id === course.id;

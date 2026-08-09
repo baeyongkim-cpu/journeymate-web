@@ -167,7 +167,7 @@ export const courses: Course[] = [
     titleEn: "Ganghwa Island Heritage Journey",
     subtitleKo: "UNESCO 세계유산부터 천년 사찰, 레트로 카페까지 — 한국의 깊은 역사를 하룻밤 사이에",
     subtitleEn: "UNESCO heritage, thousand-year temples, and retro cafés — Korea's deep history in one night",
-    image: "https://images.unsplash.com/photo-1515255474375-9c9085ec617d?q=80&w=2000&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1546874177-9e664107314e?q=80&w=2000&auto=format&fit=crop",
     meaningKo: [
       { title: "UNESCO 고인돌과 선사 문명", desc: "강화도에 밀집된 UNESCO 세계문화유산 고인돌 군락지는 3,000년 전 선사시대 거석 문화의 흔적입니다. 전세계 고인돌의 40%가 한국에 있으며, 그 중심이 바로 강화도입니다." },
       { title: "한국 최고(最古) 사찰 전등사", desc: "서기 381년에 창건된 한국에서 가장 오래된 사찰, 전등사. 천년의 역사를 품은 삼랑성 성곽을 걸으며 시간을 초월한 고요함을 경험합니다." },
@@ -219,7 +219,7 @@ export const courses: Course[] = [
     titleEn: "Paradise Wellness Retreat",
     subtitleKo: "씨메르 스파, K-뷰티 트리트먼트, 서해 일몰 — 완벽한 럭셔리 힐링 1박",
     subtitleEn: "Cimer Spa, K-beauty treatments, West Sea sunset — the perfect luxury healing overnight",
-    image: "https://images.unsplash.com/photo-1517154421773-0529f29ea451?q=80&w=2000&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2000&auto=format&fit=crop",
     meaningKo: [
       { title: "씨메르 아쿠아파라다이스", desc: "파라다이스시티 내 씨메르는 아시아 최고 수준의 스파·워터파크 시설입니다. 실내외 온수풀, 사우나, 스팀룸, 전문 테라피스트의 마사지로 몸과 마음을 완전히 내려놓는 하루를 선사합니다." },
       { title: "세계적 아트 컬렉션", desc: "파라다이스시티는 쿠사마 야요이 등 세계적 현대 미술 작가들의 작품이 로비와 복도 곳곳에 전시된 '아트테인먼트 리조트'입니다." },
@@ -269,7 +269,7 @@ export const courses: Course[] = [
     titleEn: "Muuido Nature Healing & Island Campfire",
     subtitleKo: "해상탐방로, 선상 낚시, 갯벌 체험 — 도시를 벗어나 섬에서 보내는 진짜 힐링",
     subtitleEn: "Marine trail, boat fishing, tidal flat — genuine island healing away from the city",
-    image: "https://images.unsplash.com/photo-1504109586057-7a2ae83d1338?q=80&w=2000&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=2000&auto=format&fit=crop",
     meaningKo: [
       { title: "바다 위 해상탐방로", desc: "하나개 해수욕장 앞 바다 위에 세워진 1.4km 데크길은 무의도의 상징입니다. 발밑으로 청정 서해 바다가 보이고, 탁 트인 수평선이 펼쳐지는 이 길 위에서 오직 자연과 나만 존재합니다." },
       { title: "선상 낚시 & 직화 구이", desc: "로컬 어부와 함께하는 선상 낚시 체험에서 직접 잡은 물고기를 선상에서 즉석으로 구워 먹는 경험은 어느 미슐랭 레스토랑도 줄 수 없는 특별한 미식입니다." },
