@@ -68,7 +68,7 @@ export function Footer() {
             © {new Date().getFullYear()} JourneyMate. All rights reserved.
           </p>
           <div className="flex gap-6 items-center">
-            <span className="text-xs text-white/50 font-medium">v. 0.2.0</span>
+            <span className="text-xs text-white/50 font-medium">v. 0.2.1</span>
             <Link href="/terms" className="text-xs text-white/70 hover:text-white transition-colors font-medium">
               {t("이용약관", "Terms of Service")}
             </Link>
