@@ -86,7 +86,7 @@ export const courses: Course[] = [
     titleEn: "Songdo Modern City Life",
     subtitleKo: "수상택시부터 스카이뷰까지, 인천의 미래도시를 하루에 경험하다",
     subtitleEn: "From water taxis to sky views — experience Incheon's futuristic smart city in one day",
-    image: "/images/incheon/송도센트럴파크.jpg",
+    image: "/images/incheon/songdo.jpg",
     meaningKo: [
       { title: "송도 센트럴파크 수상택시", desc: "미래도시의 스카이라인을 배경으로 하는 수상택시 탑승 경험. 공원 내 보트 체험과 함께 K-스마트시티의 감성을 온전히 즐깁니다." },
       { title: "세계 유일 문자박물관", desc: "2023년 개관한 국립세계문자박물관은 세계에서 유일하게 인류의 모든 문자를 한 곳에서 체험할 수 있는 공간입니다." },
