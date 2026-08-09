@@ -46,7 +46,7 @@ export const courses: Course[] = [
     titleEn: "Open Port Time Slip",
     subtitleKo: "130년 근대 역사와 원조 짜장면, 레트로 골목을 하루에 담다",
     subtitleEn: "130 years of modern history, original jjajangmyeon, and retro alleys — all in one day",
-    image: "https://images.unsplash.com/photo-1520680196853-272cb250c6fb?q=80&w=2000&auto=format&fit=crop",
+    image: "/images/incheon/viewImg.jpeg",
     meaningKo: [
       { title: "한국 유일의 차이나타운", desc: "붉은 패루와 황금 장식이 가득한 한국 유일의 공식 차이나타운에서 짜장면의 발원지를 직접 체험하며, 동서양이 교차했던 개항기의 특별한 역사를 만납니다." },
       { title: "근대 건축의 살아있는 박물관", desc: "일제 강점기와 개항 시대의 서양식 건축물이 그대로 남아있는 개항장 거리를 걸으며 시간이 멈춘 듯한 레트로 스냅 사진 투어를 즐깁니다." },
