@@ -158,6 +158,48 @@ export const courses: Course[] = [
       }
     ]
   },
+  {
+    id: "day-4",
+    type: "day-trip",
+    titleKo: "인천 8시간 프라이빗 VIP 투어 (마스터 코스)",
+    titleEn: "Incheon 8-Hour Private VIP Tour (Master Course)",
+    subtitleKo: "송도 G타워부터 개항장, 해양박물관, 수제 도장 만들기까지 인천의 과거와 현재를 잇는 마스터플랜",
+    subtitleEn: "From Songdo G-Tower to Open Port, Maritime Museum, and custom seal making — a master plan bridging Incheon's past and present",
+    image: "/images/incheon/incheon_citizen_house.jpg",
+    meaningKo: [
+      { title: "엽서와 한글 도장의 조화", desc: "인천시민애집에서 감성적인 엽서를 받고, 만석동에서 나만의 수제 도장을 만들어 기념 엽서를 완성하는 특별한 시그니처 미션입니다." },
+      { title: "스팟별 릴레이 1:1 인터뷰", desc: "단순한 여행을 넘어, 매 스팟마다 진행되는 호스트와의 1:1 진실 인터뷰를 통해 여행의 순간을 4K 하이라이트 영상으로 생생하게 기록합니다." },
+      { title: "동선 효율 극대화", desc: "출근시간 교통 체증과 한낮의 무더위를 완벽히 회피하도록 정밀하게 설계된 휴먼 인 더 루프(Human-in-the-Loop) 동선으로 최적의 쾌적함을 선사합니다." }
+    ],
+    meaningEn: [
+      { title: "Harmony of Postcard & Korean Seal", desc: "A special signature mission to get an emotional postcard at Incheon Citizens' House, make your own handmade seal in Manseok-dong, and stamp it to complete a unique souvenir." },
+      { title: "Relay 1:1 Interviews by Spot", desc: "Going beyond a simple trip, vivid moments of your journey are recorded in 4K cinematic video through 1:1 interviews conducted at each spot." },
+      { title: "Maximized Route Efficiency", desc: "A precisely designed human-in-the-loop route that perfectly avoids rush hour traffic and midday heat, providing optimal comfort throughout the day." }
+    ],
+    details: {
+      duration: { ko: "당일 (8시간 + 선택)", en: "Day Trip (8 hours + Optional)" },
+      accommodation: { ko: "숙박 없음 (당일 복귀)", en: "No accommodation (day trip)" },
+      timing: { ko: "연중 가능", en: "Year-round" },
+      price: { ko: "1팀(2~4인) VIP 맞춤 견적", en: "VIP custom pricing per team (2-4 pax)" },
+    },
+    schedule: [
+      {
+        day: 1,
+        themeKo: "프라이빗 VIP 마스터 타임라인",
+        themeEn: "Private VIP Master Timeline",
+        items: [
+          { time: "08:50 - 09:40", activityKo: "[도착·이동] 송도 G타워 집결 및 개항장으로 자차 이동 (출근길 체증 40분 반영)", activityEn: "[Arrival & Transit] Meet at Songdo G-Tower and transfer to Open Port (accounts for 40m rush hour traffic)" },
+          { time: "09:40 - 10:30", activityKo: "[미션·탐방] 인천시민애(愛)집 — 정원 산책, 아침 담소 및 첫 번째 엽서 획득 미션", activityEn: "[Mission & Explore] Incheon Citizens' House — garden stroll, morning chat & acquire postcard" },
+          { time: "10:30 - 11:55", activityKo: "[역사] 제물포구락부(클래식 감상) 및 중구생활사전시관(대불호텔 초석 관람)", activityEn: "[History] Jemulpo Gurakbu (classical music) & Jung-gu Life History Museum (Daebul Hotel)" },
+          { time: "11:55 - 12:55", activityKo: "[미식] 명월집 — 64년 전통 곤로 솥 김치찌개 백반 (정각 입장)", activityEn: "[Dining] Myeongwol House — 64-year traditional kimchi stew lunch (exact time entry)" },
+          { time: "13:10 - 14:10", activityKo: "[문화·피서] 국립인천해양박물관 — 무더위를 피하는 쾌적한 실내 미디어아트 관람", activityEn: "[Culture] National Maritime Museum of Korea — cool indoor media art viewing" },
+          { time: "14:20 - 15:20", activityKo: "[체험] 라임테라스 & 괭이부리마을 — 나만의 한글 수제 돌 도장 만들기", activityEn: "[Experience] Lime Terrace & Gwaengiburi Village — craft your own Korean stone seal" },
+          { time: "15:20 - 16:35", activityKo: "[선택·미션] 수도국산/배다리 헌책방 (레트로) OR 연안부두 어시장 탐방. 엽서 완성 미션!", activityEn: "[Option & Mission] Sudoguksan/Baedari (Retro) OR Coastal Pier Market. Complete the postcard mission!" },
+          { time: "16:45 - 20:00", activityKo: "[종료·선택] 공식 일정 종료 및 인터뷰. (선택: 송사모 독서모임 및 G타워 33층 야경)", activityEn: "[Farewell & Option] Official tour ends & final interview. (Optional: Book club & G-Tower 33F night view)" },
+        ]
+      }
+    ]
+  },
 
   // ── 1박 2일 코스 ───────────────────────────────────────────────────────
   {

@@ -43,6 +43,7 @@ export default function Home() {
   ];
   const [currentVideoIdx, setCurrentVideoIdx] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(0.5);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleVideoEnded = () => {
@@ -54,6 +55,26 @@ export default function Home() {
     setIsMuted(nextMuted);
     if (videoRef.current) {
       videoRef.current.muted = nextMuted;
+      // If unmuting and volume is 0, set to 0.5 default
+      if (!nextMuted && volume === 0) {
+        setVolume(0.5);
+        videoRef.current.volume = 0.5;
+      }
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+      if (newVolume === 0 && !isMuted) {
+        setIsMuted(true);
+        videoRef.current.muted = true;
+      } else if (newVolume > 0 && isMuted) {
+        setIsMuted(false);
+        videoRef.current.muted = false;
+      }
     }
   };
 
@@ -61,9 +82,10 @@ export default function Home() {
     if (videoRef.current) {
       videoRef.current.defaultMuted = isMuted;
       videoRef.current.muted = isMuted;
+      videoRef.current.volume = volume;
       videoRef.current.play().catch(() => {});
     }
-  }, [currentVideoIdx, isMuted]);
+  }, [currentVideoIdx, isMuted, volume]);
 
   const isEn = lang === 'en';
 
@@ -171,21 +193,34 @@ export default function Home() {
         
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/75 via-black/45 to-black/20 backdrop-contrast-105 pointer-events-none" />
 
-        {/* Floating Sound Toggle Button */}
-        <button
-          onClick={toggleSound}
-          className="absolute top-28 right-6 md:right-12 z-20 flex items-center gap-2.5 px-4 py-2.5 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-full border border-white/40 text-white text-xs font-bold shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer group"
-        >
-          <span className="text-sm group-hover:scale-110 transition-transform">
-            {isMuted ? "🔇" : "🔊"}
-          </span>
-          <span className="font-semibold tracking-wide">
-            {isMuted ? t("배경음악 켜기", "Sound On") : t("음소거", "Mute Sound")}
-          </span>
-          {isMuted && (
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+        {/* Floating Sound Toggle Button and Volume Control */}
+        <div className="absolute top-28 right-6 md:right-12 z-20 flex items-center gap-3">
+          {!isMuted && (
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={handleVolumeChange}
+              className="w-20 md:w-28 h-1 bg-white/40 rounded-lg appearance-none cursor-pointer accent-white hover:bg-white/60 transition-colors"
+            />
           )}
-        </button>
+          <button
+            onClick={toggleSound}
+            className="flex items-center gap-2.5 px-4 py-2.5 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-full border border-white/40 text-white text-xs font-bold shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer group"
+          >
+            <span className="text-sm group-hover:scale-110 transition-transform">
+              {isMuted ? "🔇" : "🔊"}
+            </span>
+            <span className="font-semibold tracking-wide">
+              {isMuted ? t("배경음악 켜기", "Sound On") : t("음소거", "Mute Sound")}
+            </span>
+            {isMuted && (
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+            )}
+          </button>
+        </div>
         
         <motion.div 
           className="relative z-20 text-center px-4 max-w-5xl mx-auto flex flex-col items-center gap-8"
